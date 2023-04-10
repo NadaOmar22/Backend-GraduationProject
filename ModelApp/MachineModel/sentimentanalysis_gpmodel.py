@@ -7,7 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/1N9CfbzUwAg6jaWMqD49dllvjrJHzI4s6
 """
 
-# python version: 3.11.0
+#python version: 3.11.0
 #pip install django
 #pip install djangorestframework
 #pip install emoji --upgrade
@@ -15,6 +15,7 @@ Original file is located at
 #pip install nltk
 #pip install -U scikit-learn
 #pip install pandas
+# pip install django-cors-headers
 
 
 import re
@@ -39,7 +40,7 @@ from sklearn.metrics import confusion_matrix,accuracy_score, classification_repo
 #nltk.download('stopwords')
 #nltk.download('punkt')
 import os
-df = pd.read_csv('SentimentModelApp/MachineModel/Sentiment_Dataset.csv')
+df = pd.read_csv('ModelApp/MachineModel/Sentiment_Dataset.csv')
 df.head()
 
 def remove_emoji(text):
