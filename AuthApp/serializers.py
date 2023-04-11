@@ -9,7 +9,8 @@ class CitizenRegisterSerializer(serializers.ModelSerializer):
             'Email',
             'Password',
             'Gender',
-            'PhoneNumber')
+            'PhoneNumber',
+            'NationalId')
         
 class BranchSupervisorRegisterSerializer(serializers.ModelSerializer):
     class Meta:
