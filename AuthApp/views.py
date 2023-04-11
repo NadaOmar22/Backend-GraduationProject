@@ -4,19 +4,25 @@ from django.http.response import JsonResponse
 
 from AuthApp.models import Citizen, AgencySupervisor, BranchSupervisor
 from AuthApp.serializers import CitizenRegisterSerializer, BranchSupervisorRegisterSerializer, AgencySupervisorRegisterSerializer
-from django.core.files.storage import default_storage 
+from django.core.files.storage import default_storage
+from ModelApp.models import Review
 
 
 #ASupervisor  Citizen  Branch
 # Create your views here.
 @csrf_exempt
 def CitizenRegisterApi(request):
-    citizen_data=JSONParser().parse(request)
-    citizen_serializer = CitizenRegisterSerializer(data=citizen_data)
-    if citizen_serializer.is_valid():
-        citizen_serializer.save()
-        return JsonResponse("Added Successfully!!" , safe=False)
-    return JsonResponse("Failed to Add.",safe=False)
+    if request.method == 'POST':
+        citizen_data=JSONParser().parse(request)
+        citizen_serializer = CitizenRegisterSerializer(data=citizen_data)
+        print(citizen_data)
+        print(citizen_serializer)
+        if citizen_serializer.is_valid():
+            citizen_serializer.save()
+            return JsonResponse("Added Successfully!!", safe=False)
+        return JsonResponse("Failed to Add.", safe=False)
+    else:
+       return JsonResponse("Error: Wrong Method Type",safe=False)
 
 @csrf_exempt
 def CitizenLoginApi(request):
@@ -25,7 +31,32 @@ def CitizenLoginApi(request):
         if Citizen.objects.filter(Email=citizen_data['Email'] , Password=citizen_data['Password']):
             return JsonResponse("LoggedIn Successfully!!" , safe=False)
         return JsonResponse("Invalid name or password.",safe=False)
-    
+    else:
+       return JsonResponse("Error: Wrong Method Type",safe=False)
+
+@csrf_exempt
+def CitizenEditProfileApi(request):
+    if request.method=='POST':
+        citizen_data=JSONParser().parse(request)
+        CurrentCitizen = Citizen.objects.get(NationalId=citizen_data['NationalId'])
+        CurrentCitizen.Name = citizen_data['Name']
+        CurrentCitizen.Email = citizen_data['Email']
+        CurrentCitizen.Password = citizen_data['Password']
+        CurrentCitizen.PhoneNumber = citizen_data['PhoneNumber']
+        CurrentCitizen.save()
+        return JsonResponse("Data updated Successfully!!" , safe=False)
+    else:
+       return JsonResponse("Error: Wrong Method Type",safe=False)
+
+@csrf_exempt
+def CitizenReviewsHistoryApi(request):
+    if request.method == 'GET':
+        citizen_data=JSONParser().parse(request)
+        CurrentCitizen = Citizen.objects.get(NationalId=citizen_data['NationalId'])
+        return JsonResponse (str(Review.objects.filter(Source = CurrentCitizen).values()), safe=False)
+    else:
+       return JsonResponse ("Error: Wrong Method Type",safe=False)   
+
 
 # GovSupervisor Register and Login
 @csrf_exempt
