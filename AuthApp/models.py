@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password
 
-# Create your models here.
-
 class User(models.Model):
     UserId = models.AutoField(primary_key=True)
     Name = models.CharField(max_length=100)
