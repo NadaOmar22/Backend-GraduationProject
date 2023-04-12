@@ -8,14 +8,14 @@ Original file is located at
 """
 
 #python version: 3.11.0
-#pip install django
-#pip install djangorestframework
-#pip install emoji --upgrade
-#pip install PyArabic
-#pip install nltk
-#pip install -U scikit-learn
-#pip install pandas
-# pip install django-cors-headers
+#pip3 install django
+#pip3 install djangorestframework
+#pip3 install emoji --upgrade
+#pip3 install PyArabic
+#pip3 install nltk
+#pip3 install -U scikit-learn
+#pip3 install pandas
+#pip3 install django-cors-headers
 
 
 import re

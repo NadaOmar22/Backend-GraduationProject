@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from AuthApp.models import Citizen, BranchSupervisor, AgencySupervisor
 
+
 class CitizenRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Citizen
