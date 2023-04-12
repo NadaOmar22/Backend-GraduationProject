@@ -3,16 +3,13 @@ from FacilityApp.models import Facility
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 
-from ModelApp.models import Review
+#from ModelApp.models import Review
 from AuthApp.models import Citizen, AgencySupervisor, BranchSupervisor
-from ModelApp.MachineModel.sentimentanalysis_gpmodel import prediction
+#from ModelApp.MachineModel.sentimentanalysis_gpmodel import prediction
 from AuthApp.serializers import CitizenRegisterSerializer, BranchSupervisorRegisterSerializer, AgencySupervisorRegisterSerializer
-from ModelApp.serializers import ReviewSerializer
+#from ModelApp.serializers import ReviewSerializer
 from django.core.files.storage import default_storage
 
-
-#ASupervisor  Citizen  Branch
-# Create your views here.
 @csrf_exempt
 def CitizenRegisterApi(request):
     if request.method == 'POST':
@@ -49,7 +46,7 @@ def CitizenEditProfileApi(request):
     else:
        return JsonResponse("Error: Wrong Method Type",safe=False)
 
-
+"""
 @csrf_exempt
 def CitizenAddReviewApi(request):
     if request.method == 'POST':
@@ -78,7 +75,7 @@ def CitizenReviewsHistoryApi(request):
     else:
        return JsonResponse ("Error: Wrong Method Type",safe=False)   
 
-
+"""
 # GovSupervisor Register and Login
 @csrf_exempt
 def BranchSupervisorRegisterApi(request):
