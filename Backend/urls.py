@@ -24,5 +24,6 @@ urlpatterns = [
     url('', include('AuthApp.urls')),
     #url('', include('ModelApp.urls')),
     url('', include('FacilityApp.urls')),
-    url('', include('AgencyApp.urls'))
+    url('', include('AgencyApp.urls')),
+    url('', include('AdminApp.urls'))
 ]

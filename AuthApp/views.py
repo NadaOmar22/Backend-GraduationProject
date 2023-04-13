@@ -26,9 +26,9 @@ def CitizenRegisterApi(request):
 def CitizenLoginApi(request):
     if request.method=='POST':
         citizen_data=JSONParser().parse(request)
-        if Citizen.objects.filter(Email=citizen_data['Email'] , Password=citizen_data['Password']):
+        if Citizen.objects.filter(Email=citizen_data['email'] , Password=citizen_data['password']):
             return JsonResponse("LoggedIn Successfully!!" , safe=False)
-        return JsonResponse("Invalid name or password.",safe=False)
+        return JsonResponse("Invalid email or password.",safe=False)
     else:
        return JsonResponse("Error: Wrong Method Type",safe=False)
 
@@ -90,9 +90,9 @@ def BranchSupervisorRegisterApi(request):
 def BranchSupervisorLoginApi(request):
     if request.method == 'POST':
         branchSupervisor_data = JSONParser().parse(request)
-        if BranchSupervisor.objects.filter(Email = branchSupervisor_data['Email'] , Password=branchSupervisor_data['Password']):
+        if BranchSupervisor.objects.filter(GovId = branchSupervisor_data['govId'] , Password=branchSupervisor_data['password']):
             return JsonResponse("LoggedIn Successfully!!" , safe=False)
-        return JsonResponse("Invalid email or password.",safe=False)
+        return JsonResponse("Invalid Id or password.",safe=False)
     
 
 @csrf_exempt
@@ -108,7 +108,7 @@ def AgencySupervisorRegisterApi(request):
 def AgencySupervisorLoginApi(request):
     if request.method == 'POST':
         agencySupervisor_data = JSONParser().parse(request)
-        if AgencySupervisor.objects.filter(Email = agencySupervisor_data['Email'] , Password=agencySupervisor_data['Password']):
+        if AgencySupervisor.objects.filter(GovId = agencySupervisor_data['govId'] , Password=agencySupervisor_data['password']):
             return JsonResponse("LoggedIn Successfully!!" , safe=False)
         return JsonResponse("Invalid email or password.",safe=False)
     
