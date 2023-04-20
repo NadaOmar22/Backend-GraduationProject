@@ -10,10 +10,10 @@ Original file is located at
 #python version: 3.11.0
 #pip3 install django
 #pip3 install djangorestframework
-#pip3 install emoji --upgrade
-#pip3 install PyArabic
-#pip3 install nltk
-#pip3 install -U scikit-learn
+#pip3 install emoji --upgrade //
+#pip3 install PyArabic //
+#pip3 install nltk //
+#pip3 install -U scikit-learn //
 #pip3 install pandas
 #pip3 install django-cors-headers
 

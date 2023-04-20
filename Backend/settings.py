@@ -37,9 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'AuthApp', 
-    'ModelApp',   
+    'AuthApp',
+    'AdminApp', 
+    #'ModelApp',   
     'FacilityApp',
+    'AgencyApp',
     'rest_framework', 
     'corsheaders',
 ]
