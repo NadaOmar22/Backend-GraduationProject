@@ -10,4 +10,6 @@ urlpatterns=[
    url('servicesForBranch/', views.GetServicesForBranchAPI),  
    url('documentsForService/', views.GetDocumentsForServiceAPI),   
    url('servicesByType/', views.GetServicesWithSpecificTypeAPI),
+   url('addDocument/', views.AddDocumentAPI),
+   url('addService/', views.AddServiceAPI)
 ] 

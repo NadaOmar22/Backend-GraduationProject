@@ -12,3 +12,4 @@ def AdministratorLoginApi(request):
         if obj.username == administrator_data['username'] and obj.password  == administrator_data['password']:
             return JsonResponse("LoggedIn Successfully!!", safe=False)
         return JsonResponse("Invalid username or password.",safe=False)
+        
