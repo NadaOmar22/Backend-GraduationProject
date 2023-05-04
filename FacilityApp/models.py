@@ -15,4 +15,10 @@ class Service(Facility):
 
 class App(Facility):
     rate = models.IntegerField(default = 1, validators=[MaxValueValidator(5), MinValueValidator(1)])
+    description = models.TextField(null = True)
+    cover = models.ImageField(upload_to='covers/', blank=True, null=True)
+    link = models.URLField(max_length=400, blank=True, null=True)
+
+
+
     

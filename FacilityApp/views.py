@@ -1,10 +1,14 @@
 #from ModelApp.models import Review
-from FacilityApp.models import Facility, App, Service
+from http.client import HTTPResponse
+from django.http import Http404 , FileResponse
+import os
+from FacilityApp.models import  App, Service
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import ServiceSerializer, DocumentSerializer
 from AgencyApp.models import Branch
+from django.conf import settings
 
 """
 @csrf_exempt
@@ -16,11 +20,27 @@ def GetFacilityReviewsApi(request):
     else:
        return JsonResponse ("Error: Wrong Method Type",safe=False)  
 """
+''
+
+
+@csrf_exempt   
+def ServeImage(request, filename):
+    file_path = os.path.join(settings.MEDIA_ROOT, filename)
+    print("i will show you youmna!", file_path)
+    if os.path.exists(file_path):
+        image = open(file_path, 'rb')  #rb : binary format
+        response = FileResponse(image)
+        return response
+    raise Http404
+
 
 @csrf_exempt   
 def GetAppsAPI(request):
     if request.method == 'GET':
-        return JsonResponse (str(App.objects.values()), safe=False)
+        apps = list(App.objects.all().values())
+        apps[0]
+        return JsonResponse(apps, safe=False)
+
 
 @csrf_exempt   
 def GetServicesForBranchAPI(request):
