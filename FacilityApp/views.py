@@ -9,6 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 from .serializers import ServiceSerializer, DocumentSerializer
 from AgencyApp.models import Branch
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
+
 
 """
 @csrf_exempt
@@ -34,11 +36,19 @@ def ServeImage(request, filename):
     raise Http404
 
 
+def get_current_host(request):
+    current_site = get_current_site(request)
+    return current_site.domain
+
+
 @csrf_exempt   
 def GetAppsAPI(request):
     if request.method == 'GET':
         apps = list(App.objects.all().values())
-        apps[0]
+        localHost = get_current_host(request)
+        imageURL = "http://"+localHost+"/media/covers/"
+        for i in range(len(apps)):
+            apps[i]['cover'] = imageURL+apps[i]['name']+'.jpeg'
         return JsonResponse(apps, safe=False)
 
 
