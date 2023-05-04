@@ -3,21 +3,19 @@ from FacilityApp.models import Facility
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 
-from ModelApp.models import Review
+#from ModelApp.models import Review
 from AuthApp.models import Citizen, AgencySupervisor, BranchSupervisor
-from ModelApp.MachineModel.sentimentanalysis_gpmodel import prediction
-from AuthApp.serializers import CitizenRegisterSerializer, BranchSupervisorRegisterSerializer, AgencySupervisorRegisterSerializer
-from ModelApp.serializers import ReviewSerializer
+#from ModelApp.MachineModel.sentimentanalysis_gpmodel import prediction
+from AuthApp.serializers import CitizenSignupSerializer, BranchSupervisorSignupSerializer, AgencySupervisorSignupSerializer
+#from ModelApp.serializers import ReviewSerializer
 from django.core.files.storage import default_storage
 
-
-#ASupervisor  Citizen  Branch
-# Create your views here.
 @csrf_exempt
-def CitizenRegisterApi(request):
+def CitizenSignupApi(request):
     if request.method == 'POST':
         citizen_data=JSONParser().parse(request)
-        citizen_serializer = CitizenRegisterSerializer(data=citizen_data)
+        citizen_serializer = CitizenSignupSerializer(data=citizen_data)
+        print(citizen_serializer)
         if citizen_serializer.is_valid():
             citizen_serializer.save()
             return JsonResponse("Added Successfully!!", safe=False)
@@ -29,9 +27,9 @@ def CitizenRegisterApi(request):
 def CitizenLoginApi(request):
     if request.method=='POST':
         citizen_data=JSONParser().parse(request)
-        if Citizen.objects.filter(Email=citizen_data['Email'] , Password=citizen_data['Password']):
+        if Citizen.objects.filter(email=citizen_data['email'] , password=citizen_data['password']):
             return JsonResponse("LoggedIn Successfully!!" , safe=False)
-        return JsonResponse("Invalid name or password.",safe=False)
+        return JsonResponse("Invalid email or password.",safe=False)
     else:
        return JsonResponse("Error: Wrong Method Type",safe=False)
 
@@ -39,30 +37,30 @@ def CitizenLoginApi(request):
 def CitizenEditProfileApi(request):
     if request.method=='POST':
         citizen_data=JSONParser().parse(request)
-        CurrentCitizen = Citizen.objects.get(NationalId=citizen_data['NationalId'])
-        CurrentCitizen.Name = citizen_data['Name']
-        CurrentCitizen.Email = citizen_data['Email']
-        CurrentCitizen.Password = citizen_data['Password']
-        CurrentCitizen.PhoneNumber = citizen_data['PhoneNumber']
+        CurrentCitizen = Citizen.objects.get(nationalId=citizen_data['nationalId'])
+        CurrentCitizen.name = citizen_data['name']
+        CurrentCitizen.email = citizen_data['email']
+        CurrentCitizen.password = citizen_data['password']
+        CurrentCitizen.phoneNumber = citizen_data['phoneNumber']
         CurrentCitizen.save()
         return JsonResponse("Data updated Successfully!!" , safe=False)
     else:
        return JsonResponse("Error: Wrong Method Type",safe=False)
 
-
+"""
 @csrf_exempt
 def CitizenAddReviewApi(request):
     if request.method == 'POST':
         review_data=JSONParser().parse(request)
-        citizen = Citizen.objects.get(NationalId=review_data['Source'])
-        facility = Facility.objects.get(Name=review_data['Destination'])
+        citizen = Citizen.objects.get(nationalId=review_data['source'])
+        facility = Facility.objects.get(name=review_data['destination'])
 
         newReview = Review()
         newReview.Source = citizen
         newReview.Destination = facility
-        newReview.Description = review_data['Description']
-        newReview.State = review_data['State']
-        newReview.Polarity = prediction(review_data['Description'])
+        newReview.Description = review_data['description']
+        newReview.State = review_data['state']
+        newReview.Polarity = prediction(review_data['description'])
         newReview.save()
         return JsonResponse("Added Successfully!!", safe=False)
     else:
@@ -73,17 +71,17 @@ def CitizenAddReviewApi(request):
 def CitizenReviewsHistoryApi(request):
     if request.method == 'GET':
         citizen_data=JSONParser().parse(request)
-        CurrentCitizen = Citizen.objects.get(NationalId=citizen_data['NationalId'])
-        return JsonResponse (str(Review.objects.filter(Source = CurrentCitizen).values()), safe=False)
+        currentCitizen = Citizen.objects.get(nationalId=citizen_data['nationalId'])
+        return JsonResponse (str(Review.objects.filter(source = currentCitizen).values()), safe=False)
     else:
        return JsonResponse ("Error: Wrong Method Type",safe=False)   
 
-
+"""
 # GovSupervisor Register and Login
 @csrf_exempt
-def BranchSupervisorRegisterApi(request):
+def BranchSupervisorSignupApi(request):
     branchSupervisor_data = JSONParser().parse(request)
-    branchSupervisor_serializer = BranchSupervisorRegisterSerializer(data = branchSupervisor_data)
+    branchSupervisor_serializer = BranchSupervisorSignupSerializer(data = branchSupervisor_data)
     if branchSupervisor_serializer.is_valid():
         branchSupervisor_serializer.save()
         return JsonResponse("Added Successfully!!" , safe=False)
@@ -93,15 +91,15 @@ def BranchSupervisorRegisterApi(request):
 def BranchSupervisorLoginApi(request):
     if request.method == 'POST':
         branchSupervisor_data = JSONParser().parse(request)
-        if BranchSupervisor.objects.filter(Email = branchSupervisor_data['Email'] , Password=branchSupervisor_data['Password']):
+        if BranchSupervisor.objects.filter(govId = branchSupervisor_data['govId'] , password=branchSupervisor_data['password']):
             return JsonResponse("LoggedIn Successfully!!" , safe=False)
-        return JsonResponse("Invalid email or password.",safe=False)
+        return JsonResponse("Invalid Id or password.",safe=False)
     
 
 @csrf_exempt
-def AgencySupervisorRegisterApi(request):
+def AgencySupervisorSignupApi(request):
     agencySupervisor_data = JSONParser().parse(request)
-    agencySupervisor_serializer = AgencySupervisorRegisterSerializer(data = agencySupervisor_data)
+    agencySupervisor_serializer = AgencySupervisorSignupSerializer(data = agencySupervisor_data)
     if agencySupervisor_serializer.is_valid():
         agencySupervisor_serializer.save()
         return JsonResponse("Added Successfully!!" , safe=False)
@@ -111,7 +109,7 @@ def AgencySupervisorRegisterApi(request):
 def AgencySupervisorLoginApi(request):
     if request.method == 'POST':
         agencySupervisor_data = JSONParser().parse(request)
-        if AgencySupervisor.objects.filter(Email = agencySupervisor_data['Email'] , Password=agencySupervisor_data['Password']):
+        if AgencySupervisor.objects.filter(govId = agencySupervisor_data['govId'] , password=agencySupervisor_data['password']):
             return JsonResponse("LoggedIn Successfully!!" , safe=False)
         return JsonResponse("Invalid email or password.",safe=False)
     
