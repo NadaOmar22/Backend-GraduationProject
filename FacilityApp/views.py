@@ -11,8 +11,8 @@ from AgencyApp.models import Branch
 def GetFacilityReviewsApi(request):
     if request.method == 'GET':
         facility_data=JSONParser().parse(request)
-        facility = Facility.objects.get(Name = facility_data['Name'])
-        return JsonResponse (str(Review.objects.filter(Destination = facility).values()), safe=False)
+        facility = Facility.objects.get(name = facility_data['name'])
+        return JsonResponse (str(Review.objects.filter(destination = facility).values()), safe=False)
     else:
        return JsonResponse ("Error: Wrong Method Type",safe=False)  
 """
@@ -48,9 +48,31 @@ def GetServicesWithSpecificTypeAPI(request):
 def GetDocumentsForServiceAPI(request):
     if request.method == 'GET':
         requestData = JSONParser().parse(request)
-        serviceObj = Service.objects.get(Name = requestData['name'])   
+        serviceObj = Service.objects.get(name = requestData['name'])   
         documents = serviceObj.Documents.all()
         serializer = DocumentSerializer(documents, many=True)
         return JsonResponse (str(serializer.data), safe=False)
     else:
         return JsonResponse("Error: Wrong Method Type", status=400)
+    
+@csrf_exempt   
+def AddDocumentAPI(request):
+    if request.method == 'POST':
+        documentData = JSONParser().parse(request)
+        documentSerializer = DocumentSerializer(data = documentData)
+        if documentSerializer.is_valid():
+            documentSerializer.save()
+            return JsonResponse("Added Successfully!!" , safe=False)
+        return JsonResponse("Failed to Add.",safe=False)
+    
+@csrf_exempt   
+def AddServiceAPI(request):
+    if request.method == 'POST':
+        serviceData = JSONParser().parse(request)
+        print(serviceData)
+        serviceSerializer = ServiceSerializer(data = serviceData)
+        print(serviceSerializer)
+        if serviceSerializer.is_valid():
+            serviceSerializer.save()
+            return JsonResponse("Added Successfully!!" , safe=False)
+        return JsonResponse("Failed to Add.",safe=False)
