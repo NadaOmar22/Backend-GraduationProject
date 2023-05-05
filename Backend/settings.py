@@ -128,7 +128,7 @@ MEDIA_ROOT = 'media/covers/'
 #MEDIA_ROOT = os.path.join(BASE_DIR, 'media/covers')
 MEDIA_URL = '/media/covers/'
 
-
+LOCALHOST = '8000'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/

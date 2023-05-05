@@ -24,14 +24,14 @@ def GetFacilityReviewsApi(request):
 """
 ''
 
-
 @csrf_exempt   
 def ServeImage(request, filename):
     file_path = os.path.join(settings.MEDIA_ROOT, filename)
-    print("i will show you youmna!", file_path)
+    #print("i will show you youmna!", file_path)
     if os.path.exists(file_path):
         image = open(file_path, 'rb')  #rb : binary format
         response = FileResponse(image)
+        print(response)
         return response
     raise Http404
 
@@ -46,9 +46,10 @@ def GetAppsAPI(request):
     if request.method == 'GET':
         apps = list(App.objects.all().values())
         localHost = get_current_host(request)
-        imageURL = "http://"+localHost+"/media/covers/"
+        imageURL = "http://"+localHost+'/'+settings.MEDIA_ROOT
         for i in range(len(apps)):
-            apps[i]['cover'] = imageURL+apps[i]['name']+'.jpeg'
+            imageName = App.objects.get(name = apps[i]['name']).cover.name
+            apps[i]['cover'] = imageURL+imageName+'/'    
         return JsonResponse(apps, safe=False)
 
 
