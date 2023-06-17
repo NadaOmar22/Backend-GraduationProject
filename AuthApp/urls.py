@@ -14,5 +14,7 @@ urlpatterns=[
     url('agencyLogin/',views.AgencySupervisorLoginApi), 
     url('editProfile/', views.CitizenEditProfileApi),
     url('addreview/', views.CitizenAddReviewApi), 
-    url('serviceReviewsCount/', views.ServiceReviewsCountApi) 
+    url('serviceReviewsCount/', views.ServiceReviewsCountApi),#ممكن نستخدم اللي تحتها بدل منها
+    url('serviceReviews/', views.ServiceReviewsApi),
+    url('branchReviews/', views.BranchReviewsApi)
 ] 

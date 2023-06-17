@@ -10,6 +10,7 @@ from ModelApp.MachineModel.sentimentanalysis_gpmodel import prediction
 from AuthApp.serializers import CitizenSignupSerializer, BranchSupervisorSignupSerializer, AgencySupervisorSignupSerializer
 from ModelApp.serializers import ReviewSerializer
 from django.core.files.storage import default_storage
+from rest_framework.response import Response
 
 @csrf_exempt
 def CitizenSignupApi(request):
@@ -146,4 +147,73 @@ def ServiceReviewsCountApi(request):
 
     return JsonResponse("Invalid.",safe=False)        
 
+@csrf_exempt
+def ServiceReviewsApi(request):
+    if request.method == 'GET':
+        print(request)
+        #request_data = JSONParser().parse(request)
+        facilityObj = Facility.objects.get(name = request.GET.get('serviceName'))
+        branchObj = Branch.objects.get(name = request.GET.get('branchName'))
         
+        reviews = Review.objects.filter(destination = facilityObj, relatedBranch = branchObj)
+
+        positiveList = []
+        negativeList = []
+        neutralList = []
+
+        for review in reviews:
+            dict = {
+                    "description":review.description,
+                    "state": review.state
+                }
+            if review.polarity == "positive":  
+                positiveList.append(dict)
+            elif review.polarity == "negative":
+                negativeList.append(dict)
+            elif review.polarity == "neutral":
+                neutralList.append(dict)
+         
+        response_data = {
+            'positiveList': positiveList,
+            'negativeList': negativeList,
+            'neutralList': neutralList
+        }
+        
+        return JsonResponse(response_data, safe=False)
+    
+    return JsonResponse("Invalid.",safe=False)  
+
+@csrf_exempt
+def BranchReviewsApi(request):
+    if request.method == 'GET':
+        request_data = JSONParser().parse(request)
+        branchObj = Branch.objects.get(name = request_data['branchName'])
+
+        reviews = Review.objects.filter(relatedBranch = branchObj)
+
+        positiveList = []
+        negativeList = []
+        neutralList = []
+
+        for review in reviews:
+            dict = {
+                    "description":review.description,
+                    "serviceName":review.destination.name,
+                    "state": review.state
+                }
+            if review.polarity == "positive":  
+                positiveList.append(dict)
+            elif review.polarity == "negative":
+                negativeList.append(dict)
+            elif review.polarity == "neutral":
+                neutralList.append(dict)
+         
+        response_data = {
+            'positiveList': positiveList,
+            'negativeList': negativeList,
+            'neutralList': neutralList
+        }
+        
+        return JsonResponse(response_data, safe=False)
+    
+    return JsonResponse("Invalid.",safe=False)     
