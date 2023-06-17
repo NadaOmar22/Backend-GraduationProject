@@ -1,4 +1,4 @@
-#from ModelApp.models import Review
+from ModelApp.models import Review
 from http.client import HTTPResponse
 from django.http import Http404 , FileResponse
 import os
@@ -12,7 +12,7 @@ from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 
 
-"""
+
 @csrf_exempt
 def GetFacilityReviewsApi(request):
     if request.method == 'GET':
@@ -21,8 +21,7 @@ def GetFacilityReviewsApi(request):
         return JsonResponse (str(Review.objects.filter(destination = facility).values()), safe=False)
     else:
        return JsonResponse ("Error: Wrong Method Type",safe=False)  
-"""
-''
+
 
 @csrf_exempt   
 def ServeImage(request, filename):

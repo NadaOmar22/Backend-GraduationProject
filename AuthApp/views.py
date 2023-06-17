@@ -1,13 +1,14 @@
 from django.views.decorators.csrf import csrf_exempt
 from FacilityApp.models import Facility
+from AgencyApp.models import Branch
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 
-#from ModelApp.models import Review
+from ModelApp.models import Review
 from AuthApp.models import Citizen, AgencySupervisor, BranchSupervisor
-#from ModelApp.MachineModel.sentimentanalysis_gpmodel import prediction
+from ModelApp.MachineModel.sentimentanalysis_gpmodel import prediction
 from AuthApp.serializers import CitizenSignupSerializer, BranchSupervisorSignupSerializer, AgencySupervisorSignupSerializer
-#from ModelApp.serializers import ReviewSerializer
+from ModelApp.serializers import ReviewSerializer
 from django.core.files.storage import default_storage
 
 @csrf_exempt
@@ -15,7 +16,6 @@ def CitizenSignupApi(request):
     if request.method == 'POST':
         citizen_data=JSONParser().parse(request)
         citizen_serializer = CitizenSignupSerializer(data=citizen_data)
-        print(citizen_serializer)
         if citizen_serializer.is_valid():
             citizen_serializer.save()
             return JsonResponse("Added Successfully!!", safe=False)
@@ -47,7 +47,7 @@ def CitizenEditProfileApi(request):
     else:
        return JsonResponse("Error: Wrong Method Type",safe=False)
 
-"""
+
 @csrf_exempt
 def CitizenAddReviewApi(request):
     if request.method == 'POST':
@@ -56,11 +56,13 @@ def CitizenAddReviewApi(request):
         facility = Facility.objects.get(name=review_data['destination'])
 
         newReview = Review()
-        newReview.Source = citizen
-        newReview.Destination = facility
-        newReview.Description = review_data['description']
-        newReview.State = review_data['state']
-        newReview.Polarity = prediction(review_data['description'])
+
+        newReview.source = citizen
+        newReview.destination = facility
+        newReview.description = review_data['description']
+        newReview.state = review_data['state']
+        newReview.polarity = prediction(review_data['description'])[0]
+
         newReview.save()
         return JsonResponse("Added Successfully!!", safe=False)
     else:
@@ -76,7 +78,7 @@ def CitizenReviewsHistoryApi(request):
     else:
        return JsonResponse ("Error: Wrong Method Type",safe=False)   
 
-"""
+
 # GovSupervisor Register and Login
 @csrf_exempt
 def BranchSupervisorSignupApi(request):
@@ -112,4 +114,36 @@ def AgencySupervisorLoginApi(request):
         if AgencySupervisor.objects.filter(govId = agencySupervisor_data['govId'] , password=agencySupervisor_data['password']):
             return JsonResponse("LoggedIn Successfully!!" , safe=False)
         return JsonResponse("Invalid email or password.",safe=False)
-    
+
+# reviews count based on specific type    
+@csrf_exempt
+def ServiceReviewsCountApi(request):
+    if request.method == 'GET':
+        request_data = JSONParser().parse(request)
+        facilityObj = Facility.objects.get(name = request_data['serviceName'])
+        branchObj = Branch.objects.get(name = request_data['branchName'])
+
+        positiveCount = 0
+        negativeCount = 0
+        neutralCount = 0
+
+        reviews = Review.objects.filter(destination = facilityObj, relatedBranch = branchObj)
+        for review in reviews:
+            if review.polarity == "positive":
+                positiveCount += 1
+            elif review.polarity == "negative":
+                negativeCount += 1
+            elif review.polarity == "neutral":
+                neutralCount += 1
+
+        response_data = {
+            'positiveCount': positiveCount,
+            'negativeCount': negativeCount,
+            'neutralCount': neutralCount
+        }
+
+        return JsonResponse(response_data)
+
+    return JsonResponse("Invalid.",safe=False)        
+
+        
