@@ -11,8 +11,8 @@ def predict(request):
         review_serializer = ReviewSerializer(data = review)
         if review_serializer.is_valid():
             review_serializer.save()
-            sentiment = prediction(review['Description'])
-            return JsonResponse(sentiment[0], safe=False)
+            sentiment = prediction(review['description'])
+            return JsonResponse(sentiment, safe=False)
     else:
         return JsonResponse("Invalid Request Type", safe=False)
 

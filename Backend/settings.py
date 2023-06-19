@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,8 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'AuthApp', 
-    #'ModelApp',   
+    'AuthApp',
+    'AdminApp', 
+    'ModelApp',   
     'FacilityApp',
     'AgencyApp',
     'rest_framework', 
@@ -120,6 +122,13 @@ USE_TZ = True
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+MEDIA_ROOT = 'media/covers/'
+#MEDIA_URL = '/media/covers/'
+
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'media/covers')
+MEDIA_URL = '/media/covers/'
+
+LOCALHOST = '8000'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
