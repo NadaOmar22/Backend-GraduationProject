@@ -113,14 +113,19 @@ def AgencySupervisorLoginApi(request):
         return JsonResponse("Invalid email or password.",safe=False)
 
 @csrf_exempt
-def ServiceReviewsApi(request):
+def ServiceReviewsFilteredByYearApi(request):
     if request.method == 'POST':
         print(request)
         request_data = JSONParser().parse(request)
         facilityObj = Facility.objects.get(name = request_data['serviceName'])
         branchObj = Branch.objects.get(name = request_data['branchName'])
+
+        year = request_data['year']
         
-        reviews = Review.objects.filter(destination = facilityObj, relatedBranch = branchObj)
+        reviews = Review.objects.filter(destination = facilityObj, 
+                                        relatedBranch = branchObj,
+                                        date__year = year
+                                        )
 
         positiveList = []
         negativeList = []
@@ -130,7 +135,8 @@ def ServiceReviewsApi(request):
             dict = {
                     "description":review.description,
                     "state": review.state,
-                    "serviceName" : request_data['serviceName']
+                    "serviceName" : request_data['serviceName'],
+                    "date" : review.date
                 }
             if review.polarity == "positive":  
                 positiveList.append(dict)
@@ -144,18 +150,20 @@ def ServiceReviewsApi(request):
             'negativeList': negativeList,
             'neutralList': neutralList
         }
-        
+
         return JsonResponse(response_data, safe=False)
     
     return JsonResponse("Invalid.",safe=False)  
 
 @csrf_exempt
-def BranchReviewsApi(request):
+def BranchReviewsFilteredByYearApi(request):
     if request.method == 'POST':
         request_data = JSONParser().parse(request)
         branchObj = Branch.objects.get(name = request_data['branchName'])
 
-        reviews = Review.objects.filter(relatedBranch = branchObj)
+        year = request_data['year']
+
+        reviews = Review.objects.filter(relatedBranch = branchObj, date__year = year)
 
         positiveList = []
         negativeList = []
@@ -165,7 +173,8 @@ def BranchReviewsApi(request):
             dict = {
                     "description":review.description,
                     "serviceName":review.destination.name,
-                    "state": review.state
+                    "state": review.state,
+                    'date': review.date,
                 }
             if review.polarity == "positive":  
                 positiveList.append(dict)

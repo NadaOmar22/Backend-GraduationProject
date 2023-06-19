@@ -14,6 +14,6 @@ urlpatterns=[
     url('agencyLogin/',views.AgencySupervisorLoginApi), 
     url('editProfile/', views.CitizenEditProfileApi),
     url('addreview/', views.CitizenAddReviewApi), 
-    url('serviceReviews/', views.ServiceReviewsApi),
-    url('branchReviews/', views.BranchReviewsApi)
+    url('serviceReviewsFilteredByYear/', views.ServiceReviewsFilteredByYearApi),
+    url('branchReviewsFilteredByYear/', views.BranchReviewsFilteredByYearApi)
 ] 
