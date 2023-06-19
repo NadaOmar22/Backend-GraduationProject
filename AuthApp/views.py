@@ -48,7 +48,6 @@ def CitizenEditProfileApi(request):
     else:
        return JsonResponse("Error: Wrong Method Type",safe=False)
 
-
 @csrf_exempt
 def CitizenAddReviewApi(request):
     if request.method == 'POST':
@@ -69,7 +68,6 @@ def CitizenAddReviewApi(request):
     else:
        return JsonResponse("Error: Wrong Method Type",safe=False)
 
-
 @csrf_exempt
 def CitizenReviewsHistoryApi(request):
     if request.method == 'GET':
@@ -78,7 +76,6 @@ def CitizenReviewsHistoryApi(request):
         return JsonResponse (str(Review.objects.filter(source = currentCitizen).values()), safe=False)
     else:
        return JsonResponse ("Error: Wrong Method Type",safe=False)   
-
 
 # GovSupervisor Register and Login
 @csrf_exempt
@@ -98,7 +95,6 @@ def BranchSupervisorLoginApi(request):
             return JsonResponse("LoggedIn Successfully!!" , safe=False)
         return JsonResponse("Invalid Id or password.",safe=False)
     
-
 @csrf_exempt
 def AgencySupervisorSignupApi(request):
     agencySupervisor_data = JSONParser().parse(request)
@@ -116,44 +112,13 @@ def AgencySupervisorLoginApi(request):
             return JsonResponse("LoggedIn Successfully!!" , safe=False)
         return JsonResponse("Invalid email or password.",safe=False)
 
-# reviews count based on specific type    
 @csrf_exempt
-def ServiceReviewsCountApi(request):
-    if request.method == 'GET':
+def ServiceReviewsApi(request):
+    if request.method == 'POST':
+        print(request)
         request_data = JSONParser().parse(request)
         facilityObj = Facility.objects.get(name = request_data['serviceName'])
         branchObj = Branch.objects.get(name = request_data['branchName'])
-
-        positiveCount = 0
-        negativeCount = 0
-        neutralCount = 0
-
-        reviews = Review.objects.filter(destination = facilityObj, relatedBranch = branchObj)
-        for review in reviews:
-            if review.polarity == "positive":
-                positiveCount += 1
-            elif review.polarity == "negative":
-                negativeCount += 1
-            elif review.polarity == "neutral":
-                neutralCount += 1
-
-        response_data = {
-            'positiveCount': positiveCount,
-            'negativeCount': negativeCount,
-            'neutralCount': neutralCount
-        }
-
-        return JsonResponse(response_data)
-
-    return JsonResponse("Invalid.",safe=False)        
-
-@csrf_exempt
-def ServiceReviewsApi(request):
-    if request.method == 'GET':
-        print(request)
-        #request_data = JSONParser().parse(request)
-        facilityObj = Facility.objects.get(name = request.GET.get('serviceName'))
-        branchObj = Branch.objects.get(name = request.GET.get('branchName'))
         
         reviews = Review.objects.filter(destination = facilityObj, relatedBranch = branchObj)
 
@@ -164,7 +129,8 @@ def ServiceReviewsApi(request):
         for review in reviews:
             dict = {
                     "description":review.description,
-                    "state": review.state
+                    "state": review.state,
+                    "serviceName" : request_data['serviceName']
                 }
             if review.polarity == "positive":  
                 positiveList.append(dict)
@@ -185,7 +151,7 @@ def ServiceReviewsApi(request):
 
 @csrf_exempt
 def BranchReviewsApi(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         request_data = JSONParser().parse(request)
         branchObj = Branch.objects.get(name = request_data['branchName'])
 
@@ -215,5 +181,5 @@ def BranchReviewsApi(request):
         }
         
         return JsonResponse(response_data, safe=False)
-    
-    return JsonResponse("Invalid.",safe=False)     
+    return JsonResponse("Invalid.",safe=False)  
+   

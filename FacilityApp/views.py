@@ -54,12 +54,14 @@ def GetAppsAPI(request):
 
 @csrf_exempt   
 def GetServicesForBranchAPI(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         requestData = JSONParser().parse(request)
-        branchObj = Branch.objects.get(name = requestData['name'])   
+        branchObj = Branch.objects.get(name = requestData['branchName'])   
         services = branchObj.services.all()
-        serializer = ServiceSerializer(services, many=True)
-        return JsonResponse (str(serializer.data), safe=False)
+        response = []
+        for service in services:
+            response.append(service.name)
+        return JsonResponse (response, safe=False)
     else:
         return JsonResponse("Error: Wrong Method Type", status=400)    
     
