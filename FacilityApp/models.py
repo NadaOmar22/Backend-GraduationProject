@@ -6,6 +6,10 @@ from django.conf import settings
 class Facility(models.Model):
     facilityId = models.AutoField(primary_key = True)
     name = models.CharField(max_length = 70)
+    def save(self, args, **kwargs):
+        raise Exception("Creation of objects from RestrictedModel is not allowed.")
+
+        super().save(args, **kwargs)
 
 class Document(models.Model):
     name = models.CharField(max_length = 200)

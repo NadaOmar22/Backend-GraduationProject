@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'AuthApp',
     'AdminApp', 
-    #'ModelApp',   
+    'ModelApp',   
     'FacilityApp',
     'AgencyApp',
     'rest_framework', 
