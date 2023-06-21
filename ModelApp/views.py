@@ -15,5 +15,5 @@ def predict(request):
             return JsonResponse(sentiment, safe=False)
     else:
         return JsonResponse("Invalid Request Type", safe=False)
-
+          
 

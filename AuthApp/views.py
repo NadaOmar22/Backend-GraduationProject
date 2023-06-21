@@ -54,12 +54,14 @@ def CitizenAddReviewApi(request):
         review_data=JSONParser().parse(request)
         citizen = Citizen.objects.get(nationalId=review_data['source'])
         facility = Facility.objects.get(name=review_data['destination'])
+        branch = Branch.objects.get(name=review_data['relatedBranch'])
 
         newReview = Review()
 
         newReview.source = citizen
         newReview.destination = facility
         newReview.description = review_data['description']
+        newReview.relatedBranch = branch
         newReview.state = review_data['state']
         newReview.polarity = prediction(review_data['description'])[0]
 
@@ -111,75 +113,4 @@ def AgencySupervisorLoginApi(request):
         if AgencySupervisor.objects.filter(govId = agencySupervisor_data['govId'] , password=agencySupervisor_data['password']):
             return JsonResponse("LoggedIn Successfully!!" , safe=False)
         return JsonResponse("Invalid email or password.",safe=False)
-
-@csrf_exempt
-def ServiceReviewsApi(request):
-    if request.method == 'POST':
-        print(request)
-        request_data = JSONParser().parse(request)
-        facilityObj = Facility.objects.get(name = request_data['serviceName'])
-        branchObj = Branch.objects.get(name = request_data['branchName'])
-        
-        reviews = Review.objects.filter(destination = facilityObj, relatedBranch = branchObj)
-
-        positiveList = []
-        negativeList = []
-        neutralList = []
-
-        for review in reviews:
-            dict = {
-                    "description":review.description,
-                    "state": review.state,
-                    "serviceName" : request_data['serviceName']
-                }
-            if review.polarity == "positive":  
-                positiveList.append(dict)
-            elif review.polarity == "negative":
-                negativeList.append(dict)
-            elif review.polarity == "neutral":
-                neutralList.append(dict)
-         
-        response_data = {
-            'positiveList': positiveList,
-            'negativeList': negativeList,
-            'neutralList': neutralList
-        }
-        
-        return JsonResponse(response_data, safe=False)
-    
-    return JsonResponse("Invalid.",safe=False)  
-
-@csrf_exempt
-def BranchReviewsApi(request):
-    if request.method == 'POST':
-        request_data = JSONParser().parse(request)
-        branchObj = Branch.objects.get(name = request_data['branchName'])
-
-        reviews = Review.objects.filter(relatedBranch = branchObj)
-
-        positiveList = []
-        negativeList = []
-        neutralList = []
-
-        for review in reviews:
-            dict = {
-                    "description":review.description,
-                    "serviceName":review.destination.name,
-                    "state": review.state
-                }
-            if review.polarity == "positive":  
-                positiveList.append(dict)
-            elif review.polarity == "negative":
-                negativeList.append(dict)
-            elif review.polarity == "neutral":
-                neutralList.append(dict)
-         
-        response_data = {
-            'positiveList': positiveList,
-            'negativeList': negativeList,
-            'neutralList': neutralList
-        }
-        
-        return JsonResponse(response_data, safe=False)
-    return JsonResponse("Invalid.",safe=False)  
-   
+  

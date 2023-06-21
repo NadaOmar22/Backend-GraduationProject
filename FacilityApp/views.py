@@ -1,4 +1,5 @@
 from ModelApp.models import Review
+from FacilityApp.models import Facility
 from http.client import HTTPResponse
 from django.http import Http404 , FileResponse
 import os
@@ -58,6 +59,7 @@ def GetServicesForBranchAPI(request):
         requestData = JSONParser().parse(request)
         branchObj = Branch.objects.get(name = requestData['branchName'])   
         services = branchObj.services.all()
+        print(services)
         response = []
         for service in services:
             response.append(service.name)
@@ -108,3 +110,104 @@ def AddServiceAPI(request):
             serviceSerializer.save()
             return JsonResponse("Added Successfully!!" , safe=False)
         return JsonResponse("Failed to Add.",safe=False)
+    
+
+@csrf_exempt
+def ServiceReviewsFilteredByYearApi(request):
+    if request.method == 'POST':
+        print(request)
+        request_data = JSONParser().parse(request)
+        facilityObj = Facility.objects.get(name = request_data['serviceName'])
+        branchObj = Branch.objects.get(name = request_data['branchName'])
+
+        year = request_data['year']
+        
+        reviews = Review.objects.filter(destination = facilityObj, 
+                                        relatedBranch = branchObj,
+                                        date__year = year
+                                        )
+
+        positiveList = []
+        negativeList = []
+        neutralList = []
+
+        for review in reviews:
+            dict = {
+                    "description":review.description,
+                    "state": review.state,
+                    "serviceName" : request_data['serviceName'],
+                    "date" : review.date
+                }
+            if review.polarity == "positive":  
+                positiveList.append(dict)
+            elif review.polarity == "negative":
+                negativeList.append(dict)
+            elif review.polarity == "neutral":
+                neutralList.append(dict)
+         
+        response_data = {
+            'positiveList': positiveList,
+            'negativeList': negativeList,
+            'neutralList': neutralList
+        }
+
+        return JsonResponse(response_data, safe=False)
+    
+    return JsonResponse("Invalid.",safe=False)  
+
+@csrf_exempt
+def BranchReviewsFilteredByYearApi(request):
+    if request.method == 'POST':
+        request_data = JSONParser().parse(request)
+        branchObj = Branch.objects.get(name = request_data['branchName'])
+
+        year = request_data['year']
+
+        reviews = Review.objects.filter(relatedBranch = branchObj, date__year = year)
+
+        positiveList = []
+        negativeList = []
+        neutralList = []
+
+        for review in reviews:
+            dict = {
+                    "description":review.description,
+                    "serviceName":review.destination.name,
+                    "state": review.state,
+                    'date': review.date,
+                }
+            if review.polarity == "positive":  
+                positiveList.append(dict)
+            elif review.polarity == "negative":
+                negativeList.append(dict)
+            elif review.polarity == "neutral":
+                neutralList.append(dict)
+         
+        response_data = {
+            'positiveList': positiveList,
+            'negativeList': negativeList,
+            'neutralList': neutralList
+        }
+        
+        return JsonResponse(response_data, safe=False)
+    return JsonResponse("Invalid.",safe=False)  
+ 
+
+@csrf_exempt
+def ReviewsYearsFilteredByBranchApi(request):
+    if request.method == 'POST':
+        request_data = JSONParser().parse(request)
+        branchObj = Branch.objects.get(name = request_data['branchName'])
+
+        reviews = Review.objects.filter(relatedBranch = branchObj)
+
+        reviewsYear = set()
+        for review in reviews:
+            reviewsYear.add(review.date.year)
+        response = list(reviewsYear)
+        return JsonResponse(response, safe=False)
+    return JsonResponse("Invalid.",safe=False)  
+
+         
+
+
