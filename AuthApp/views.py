@@ -54,12 +54,14 @@ def CitizenAddReviewApi(request):
         review_data=JSONParser().parse(request)
         citizen = Citizen.objects.get(nationalId=review_data['source'])
         facility = Facility.objects.get(name=review_data['destination'])
+        branch = Branch.objects.get(name=review_data['relatedBranch'])
 
         newReview = Review()
 
         newReview.source = citizen
         newReview.destination = facility
         newReview.description = review_data['description']
+        newReview.relatedBranch = branch
         newReview.state = review_data['state']
         newReview.polarity = prediction(review_data['description'])[0]
 

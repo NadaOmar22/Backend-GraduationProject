@@ -5,5 +5,7 @@ from AgencyApp import views
 
 
 urlpatterns=[
-   url('getBranchesForAgency/', views.GetBranchesForAgencyAPI), 
+   url('getBranchesForAgency/', views.GetBranchesForAgencyApi), 
+   url('getAgencies/', views.GetAgenciesApi), 
+
 ] 

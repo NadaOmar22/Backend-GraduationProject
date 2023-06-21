@@ -11,5 +11,5 @@ class Review(models.Model):
     description = models.CharField(max_length = 300)
     state = models.CharField(max_length = 100)
     polarity = models.CharField(max_length = 20)
-    #date = models.DateField(auto_now_add = True)
-    date = models.DateField()
+    date = models.DateField(auto_now_add = True)
+    #date = models.DateField(null=True)
