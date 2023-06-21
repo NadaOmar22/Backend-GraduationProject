@@ -7,12 +7,25 @@ from AgencyApp.models import Branch, Agency
 
 
 @csrf_exempt   
-def GetBranchesForAgencyAPI(request):
-    if request.method == 'GET':
+def GetBranchesForAgencyApi(request):
+    if request.method == 'POST':
         agencyData = JSONParser().parse(request)
-        agencyObj = Agency.objects.get(name = agencyData['name'])   
+        agencyObj = Agency.objects.get(name = agencyData['agencyName'])   
         branches = agencyObj.branches.all()
-        serializer = BranchSerializer(branches, many=True)
-        return JsonResponse (str(serializer.data), safe=False)
+        response = []
+        for branch in branches:
+            response.append(branch.name)
+        return JsonResponse (response, safe=False)
+    else:
+        return JsonResponse("Error: Wrong Method Type", status=400)
+
+@csrf_exempt 
+def GetAgenciesApi(request):
+    if request.method == 'GET':
+        agencies = Agency.objects.all()  
+        response = []
+        for agency in agencies:
+            response.append(agency.name)
+        return JsonResponse (response, safe=False)
     else:
         return JsonResponse("Error: Wrong Method Type", status=400)

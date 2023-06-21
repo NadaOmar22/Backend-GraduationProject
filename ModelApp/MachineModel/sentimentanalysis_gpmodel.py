@@ -10,6 +10,7 @@ Original file is located at
 #python version: 3.11.0
 #pip3 install django
 #pip3 install djangorestframework
+#python -m pip install Pillow
 #pip3 install emoji --upgrade //
 #pip3 install PyArabic //
 #pip3 install nltk //
@@ -20,8 +21,8 @@ Original file is located at
 
 import re
 import sys
-import nltk
-import emoji
+#import nltk
+#import emoji
 import string
 import argparse
 import numpy as np
@@ -42,7 +43,7 @@ from sklearn.metrics import confusion_matrix,accuracy_score, classification_repo
 import os
 df = pd.read_csv('ModelApp/MachineModel/Sentiment_Dataset.csv')
 df.head()
-
+"""
 def remove_emoji(text):
     return emoji.demojize(text)
 
@@ -106,7 +107,7 @@ def process_text(text):
 #lemmatization the review column
 df['Review']  = df['Review'].apply(lambda x:process_text(x))
 df['Review']
-
+"""
 df["Classification"].value_counts()
 
 #remove tabs and new lines from the text 
@@ -137,8 +138,8 @@ prediction = pipe.predict(X_test)
 #print("f1 Score -> ",f1_score(Y_test,prediction,average='micro')*100)
 
 def prediction(text):
-  text = pre_processing(text)
-  text = process_text(text)
+  #text = pre_processing(text)
+  #text = process_text(text)
   list = [text]
   prediction = pipe.predict(list)
   return prediction
