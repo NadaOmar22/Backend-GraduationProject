@@ -13,5 +13,8 @@ urlpatterns=[
    url('addDocument/', views.AddDocumentAPI),
    url('addService/', views.AddServiceAPI),
    path('media/covers/<path:filename>/', views.ServeImage),
+   url('serviceReviewsFilteredByYear/', views.ServiceReviewsFilteredByYearApi),
+   url('branchReviewsFilteredByYear/', views.BranchReviewsFilteredByYearApi),
+   url('reviewsYearsFilteredByBranch/', views.ReviewsYearsFilteredByBranchApi)
 ] 
 
