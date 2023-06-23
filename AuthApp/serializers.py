@@ -19,7 +19,8 @@ class BranchSupervisorSignupSerializer(serializers.ModelSerializer):
             'name',
             'password',
             'govId',
-            'branchName'
+            'branchName',
+            'supervisionType'
             )
 class AgencySupervisorSignupSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,7 +29,8 @@ class AgencySupervisorSignupSerializer(serializers.ModelSerializer):
             'name',
             'password',
             'govId',
-            'agencyName'
+            'agencyName',
+            'supervisionType'
             )
 
 

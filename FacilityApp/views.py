@@ -228,8 +228,13 @@ def GetDocumentApi(request):
     for i in range(len(services)):
         serviceNames.append(services[i].contents[1].text.strip())
         serviceLinks.append(services[i].contents[1]["href"])
-        serviceObj = Service(name=serviceNames[i])
-        serviceObj.save()
+        #serviceObj = Service(name=serviceNames[i])
+        serviceObj = Service.objects.filter(name=serviceNames[i])
+        if serviceObj:
+            print("entered")
+        else:    
+            serviceObj2 = Service(name=serviceNames[i])
+            serviceObj2.save()
         
     for j in range(len(serviceLinks)):
         servicePage = requests.get(f"https://psm.gov.eg{serviceLinks[j]}&district_id=2&governorate_id=1&districtName=حي-الزاوية-الحمراء&governorateName=القاهرة")
@@ -238,11 +243,16 @@ def GetDocumentApi(request):
         serviceDocumentsList = soup2.find("ol").find_all("li")
         serviceDocumentsList2 = []
         [serviceDocumentsList2.append(x.text.strip()) for x in serviceDocumentsList]
+        print(serviceDocumentsList2)
         serviceDocuments.append(serviceDocumentsList2)
+
 
     response = {
         'serviceName' : serviceNames,
-       'serviceDocuments' : serviceDocuments, 
+       'serviceDocuments' : serviceDocuments,
     }
 
+    for p in range(len(serviceDocuments)):
+        print("shut up Nada , chicken chicken")
+        
     return JsonResponse(response,safe=False)  
