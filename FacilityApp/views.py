@@ -1,5 +1,5 @@
 from ModelApp.models import Review
-from FacilityApp.models import Facility
+from FacilityApp.models import Facility, Document
 from http.client import HTTPResponse
 from django.http import Http404 , FileResponse
 import os
@@ -214,10 +214,10 @@ def ReviewsYearsFilteredByBranchApi(request):
 # Web Scraping
 # Magic         
 @csrf_exempt
-def GetDocumentApi(request):
+def ScrapDocumentApi(request):
     serviceNames = []
-    serviceLinks = []
     serviceDocuments = []
+
     page = requests.get("https://psm.gov.eg/providers/1/services")
 
     src = page.content
@@ -227,32 +227,32 @@ def GetDocumentApi(request):
 
     for i in range(len(services)):
         serviceNames.append(services[i].contents[1].text.strip())
-        serviceLinks.append(services[i].contents[1]["href"])
-        #serviceObj = Service(name=serviceNames[i])
-        serviceObj = Service.objects.filter(name=serviceNames[i])
-        if serviceObj:
-            print("entered")
-        else:    
-            serviceObj2 = Service(name=serviceNames[i])
-            serviceObj2.save()
-        
-    for j in range(len(serviceLinks)):
-        servicePage = requests.get(f"https://psm.gov.eg{serviceLinks[j]}&district_id=2&governorate_id=1&districtName=حي-الزاوية-الحمراء&governorateName=القاهرة")
+
+        serviceObj = Service.objects.get(name=serviceNames[i])
+        if not serviceObj:
+            serviceObj = Service(name=serviceNames[i])
+         
+        servicePage = requests.get(f"https://psm.gov.eg{services[i].contents[1]['href']}&district_id=2&governorate_id=1&districtName=حي-الزاوية-الحمراء&governorateName=القاهرة")
         servicePageSrc =  servicePage.content  
         soup2 = BeautifulSoup(servicePageSrc, "html.parser")  
         serviceDocumentsList = soup2.find("ol").find_all("li")
         serviceDocumentsList2 = []
         [serviceDocumentsList2.append(x.text.strip()) for x in serviceDocumentsList]
-        print(serviceDocumentsList2)
-        serviceDocuments.append(serviceDocumentsList2)
 
+        for document in serviceDocumentsList2:
+            if document[0].isdigit():
+                document = document.split(' ', 1)[1]
+            documentObj = Document.objects.get(name=document) 
+
+            if not documentObj:
+                documentObj = Document(name=document)
+                documentObj.save()
+            serviceObj.documents.add(documentObj)
+            serviceObj.save()
 
     response = {
         'serviceName' : serviceNames,
-       'serviceDocuments' : serviceDocuments,
+        'serviceDocuments' : serviceDocuments,
     }
 
-    for p in range(len(serviceDocuments)):
-        print("shut up Nada , chicken chicken")
-        
     return JsonResponse(response,safe=False)  
