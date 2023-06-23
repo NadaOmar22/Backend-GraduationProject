@@ -11,7 +11,9 @@ from .serializers import ServiceSerializer, DocumentSerializer
 from AgencyApp.models import Branch
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-
+import requests
+from bs4 import BeautifulSoup
+import csv
 
 
 @csrf_exempt
@@ -209,5 +211,38 @@ def ReviewsYearsFilteredByBranchApi(request):
     return JsonResponse("Invalid.",safe=False)  
 
          
+# Web Scraping
+# Magic         
+@csrf_exempt
+def GetDocumentApi(request):
+    serviceNames = []
+    serviceLinks = []
+    serviceDocuments = []
+    page = requests.get("https://psm.gov.eg/providers/1/services")
 
+    src = page.content
+    soup = BeautifulSoup(src, "html.parser")
 
+    services = soup.find_all("div", {"class" : "media-body text-right pr-4"})
+
+    for i in range(len(services)):
+        serviceNames.append(services[i].contents[1].text.strip())
+        serviceLinks.append(services[i].contents[1]["href"])
+        serviceObj = Service(name=serviceNames[i])
+        serviceObj.save()
+        
+    for j in range(len(serviceLinks)):
+        servicePage = requests.get(f"https://psm.gov.eg{serviceLinks[j]}&district_id=2&governorate_id=1&districtName=حي-الزاوية-الحمراء&governorateName=القاهرة")
+        servicePageSrc =  servicePage.content  
+        soup2 = BeautifulSoup(servicePageSrc, "html.parser")  
+        serviceDocumentsList = soup2.find("ol").find_all("li")
+        serviceDocumentsList2 = []
+        [serviceDocumentsList2.append(x.text.strip()) for x in serviceDocumentsList]
+        serviceDocuments.append(serviceDocumentsList2)
+
+    response = {
+        'serviceName' : serviceNames,
+       'serviceDocuments' : serviceDocuments, 
+    }
+
+    return JsonResponse(response,safe=False)  

@@ -115,15 +115,15 @@ def BranchSupervisorLoginApi(request):
         return JsonResponse("Invalid Id or password.",safe=False)
     
 @csrf_exempt
-def GetBranchSupervisiorByIdApi(request):
+def GetBranchSupervisorByIdApi(request):
     if request.method=='POST':
-        citizen_data=JSONParser().parse(request)
-        requiredBranchSupervisior = BranchSupervisor.objects.get(govId=citizen_data['govId'])
+        branchSuper_data=JSONParser().parse(request)
+        requiredBranchSupervisior = BranchSupervisor.objects.get(govId=branchSuper_data['govId'])
         response = {
             "name": requiredBranchSupervisior.name,
-            "email": requiredBranchSupervisior.govId,
+            "govId": requiredBranchSupervisior.govId,
             "password": requiredBranchSupervisior.password,
-            "nationalId" : requiredBranchSupervisior.branchName,
+            "branchName" : requiredBranchSupervisior.branchName,
             "supervisionType": requiredBranchSupervisior.supervisionType
         } 
         return JsonResponse(response,safe=False)
@@ -149,15 +149,15 @@ def AgencySupervisorLoginApi(request):
         return JsonResponse("Invalid email or password.",safe=False)
 
 @csrf_exempt
-def GetAgencySupervisiorByIdApi(request):
+def GetAgencySupervisorByIdApi(request):
     if request.method=='POST':
-        citizen_data=JSONParser().parse(request)
-        requiredBranchSupervisior = AgencySupervisor.objects.get(govId=citizen_data['govId'])
+        agencySuper_data=JSONParser().parse(request)
+        requiredBranchSupervisior = AgencySupervisor.objects.get(govId=agencySuper_data['govId'])
         response = {
             "name": requiredBranchSupervisior.name,
-            "email": requiredBranchSupervisior.govId,
+            "govId": requiredBranchSupervisior.govId,
             "password": requiredBranchSupervisior.password,
-            "nationalId" : requiredBranchSupervisior.agencyName,
+            "agencyName" : requiredBranchSupervisior.agencyName,
             "supervisionType": requiredBranchSupervisior.supervisionType
         } 
         return JsonResponse(response,safe=False)

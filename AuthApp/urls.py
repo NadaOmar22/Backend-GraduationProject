@@ -15,7 +15,7 @@ urlpatterns=[
     url('editProfile/', views.CitizenEditProfileApi),
     url('addreview/', views.CitizenAddReviewApi), 
     url('getCitizenByEmail/',views.GetCitizenByEmailApi),
-    url('getBranchSupervisiorById/', views.GetBranchSupervisiorByIdApi),
-    url('getAgencySupervisiorById/', views.GetAgencySupervisiorByIdApi)
+    url('getBranchSupervisorById/', views.GetBranchSupervisorByIdApi),
+    url('getAgencySupervisorById/', views.GetAgencySupervisorByIdApi)
 
 ] 
