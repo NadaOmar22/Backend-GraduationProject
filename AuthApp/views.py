@@ -38,13 +38,30 @@ def CitizenLoginApi(request):
 def CitizenEditProfileApi(request):
     if request.method=='POST':
         citizen_data=JSONParser().parse(request)
-        CurrentCitizen = Citizen.objects.get(nationalId=citizen_data['nationalId'])
+        CurrentCitizen = Citizen.objects.get(email=citizen_data['email'])
         CurrentCitizen.name = citizen_data['name']
         CurrentCitizen.email = citizen_data['email']
         CurrentCitizen.password = citizen_data['password']
         CurrentCitizen.phoneNumber = citizen_data['phoneNumber']
         CurrentCitizen.save()
         return JsonResponse("Data updated Successfully!!" , safe=False)
+    else:
+       return JsonResponse("Error: Wrong Method Type",safe=False)
+
+
+@csrf_exempt
+def GetCitizenByEmailApi(request):
+    if request.method=='POST':
+        citizen_data=JSONParser().parse(request)
+        requiredCitizen = Citizen.objects.get(email=citizen_data['email'])
+        response = {
+            "name": requiredCitizen.name,
+            "email": requiredCitizen.email,
+            "phoneNumber": requiredCitizen.phoneNumber,
+            "password": requiredCitizen.password,
+            "nationalId" : requiredCitizen.nationalId
+        } 
+        return JsonResponse(response,safe=False)
     else:
        return JsonResponse("Error: Wrong Method Type",safe=False)
 
