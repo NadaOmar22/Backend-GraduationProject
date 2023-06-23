@@ -115,6 +115,23 @@ def BranchSupervisorLoginApi(request):
         return JsonResponse("Invalid Id or password.",safe=False)
     
 @csrf_exempt
+def GetBranchSupervisiorByIdApi(request):
+    if request.method=='POST':
+        citizen_data=JSONParser().parse(request)
+        requiredBranchSupervisior = BranchSupervisor.objects.get(govId=citizen_data['govId'])
+        response = {
+            "name": requiredBranchSupervisior.name,
+            "email": requiredBranchSupervisior.govId,
+            "password": requiredBranchSupervisior.password,
+            "nationalId" : requiredBranchSupervisior.branchName,
+            "supervisionType": requiredBranchSupervisior.supervisionType
+        } 
+        return JsonResponse(response,safe=False)
+    else:
+       return JsonResponse("Error: Wrong Method Type",safe=False)
+    
+
+@csrf_exempt
 def AgencySupervisorSignupApi(request):
     agencySupervisor_data = JSONParser().parse(request)
     agencySupervisor_serializer = AgencySupervisorSignupSerializer(data = agencySupervisor_data)
@@ -130,4 +147,19 @@ def AgencySupervisorLoginApi(request):
         if AgencySupervisor.objects.filter(govId = agencySupervisor_data['govId'] , password=agencySupervisor_data['password']):
             return JsonResponse("LoggedIn Successfully!!" , safe=False)
         return JsonResponse("Invalid email or password.",safe=False)
-  
+
+@csrf_exempt
+def GetAgencySupervisiorByIdApi(request):
+    if request.method=='POST':
+        citizen_data=JSONParser().parse(request)
+        requiredBranchSupervisior = AgencySupervisor.objects.get(govId=citizen_data['govId'])
+        response = {
+            "name": requiredBranchSupervisior.name,
+            "email": requiredBranchSupervisior.govId,
+            "password": requiredBranchSupervisior.password,
+            "nationalId" : requiredBranchSupervisior.agencyName,
+            "supervisionType": requiredBranchSupervisior.supervisionType
+        } 
+        return JsonResponse(response,safe=False)
+    else:
+       return JsonResponse("Error: Wrong Method Type",safe=False)
