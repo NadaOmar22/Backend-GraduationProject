@@ -5,7 +5,7 @@ from FacilityApp import views
 
 
 urlpatterns=[
-   #url('facilityReviews/', views.GetFacilityReviewsApi),
+   url('facilityReviews/', views.GetFacilityReviewsApi),
    url('allApps/', views.GetAppsAPI), 
    url('servicesForBranch/', views.GetServicesForBranchAPI),  
    url('documentsForService/', views.GetDocumentsForServiceAPI),   
@@ -16,7 +16,6 @@ urlpatterns=[
    url('serviceReviewsFilteredByYear/', views.ServiceReviewsFilteredByYearApi),
    url('branchReviewsFilteredByYear/', views.BranchReviewsFilteredByYearApi),
    url('reviewsYearsFilteredByBranch/', views.ReviewsYearsFilteredByBranchApi),
-   url('getDocuments/', views.GetDocumentApi)
-
+   url('scrapDocuments/', views.ScrapDocumentApi)
 ] 
 

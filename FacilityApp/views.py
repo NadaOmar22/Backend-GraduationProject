@@ -82,12 +82,17 @@ def GetServicesWithSpecificTypeAPI(request):
     
 @csrf_exempt   
 def GetDocumentsForServiceAPI(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         requestData = JSONParser().parse(request)
-        serviceObj = Service.objects.get(name = requestData['name'])   
-        documents = serviceObj.Documents.all()
-        serializer = DocumentSerializer(documents, many=True)
-        return JsonResponse (str(serializer.data), safe=False)
+        serviceObj = Service.objects.get(name = requestData['serviceName'])   
+        documents = serviceObj.documents.all()
+        doucmentsNamesList = []
+        for document in documents:
+            doucmentsNamesList.append(document.name)
+        response = {
+            "documents" : doucmentsNamesList
+        }
+        return JsonResponse (response, safe=False)
     else:
         return JsonResponse("Error: Wrong Method Type", status=400)
     
@@ -228,10 +233,11 @@ def ScrapDocumentApi(request):
     for i in range(len(services)):
         serviceNames.append(services[i].contents[1].text.strip())
 
-        serviceObj = Service.objects.get(name=serviceNames[i])
-        if not serviceObj:
+        try:
+            serviceObj = Service.objects.get(name=serviceNames[i])
+        except Service.DoesNotExist:
             serviceObj = Service(name=serviceNames[i])
-         
+            serviceObj.save() 
         servicePage = requests.get(f"https://psm.gov.eg{services[i].contents[1]['href']}&district_id=2&governorate_id=1&districtName=حي-الزاوية-الحمراء&governorateName=القاهرة")
         servicePageSrc =  servicePage.content  
         soup2 = BeautifulSoup(servicePageSrc, "html.parser")  
@@ -242,17 +248,17 @@ def ScrapDocumentApi(request):
         for document in serviceDocumentsList2:
             if document[0].isdigit():
                 document = document.split(' ', 1)[1]
-            documentObj = Document.objects.get(name=document) 
-
-            if not documentObj:
+            try:
+                documentObj = Document.objects.get(name=document)
+            except Document.DoesNotExist:
                 documentObj = Document(name=document)
                 documentObj.save()
             serviceObj.documents.add(documentObj)
-            serviceObj.save()
+        serviceObj.save()
 
     response = {
         'serviceName' : serviceNames,
         'serviceDocuments' : serviceDocuments,
     }
 
-    return JsonResponse(response,safe=False)  
+    return JsonResponse(response,safe=False)

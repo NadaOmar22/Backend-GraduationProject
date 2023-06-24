@@ -4,7 +4,7 @@ from .models import Service, Document
 class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
-        fields = ('Name',)
+        fields = ('name',)
 
 class ServiceSerializer(serializers.ModelSerializer):
     Documents = DocumentSerializer(many=True)
