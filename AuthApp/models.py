@@ -15,6 +15,7 @@ class Citizen(User):
 class GovSupervisor(User):
     govId = models.CharField(max_length=100, unique=True)
     supervisionType = models.CharField(max_length=100)
+    isApproved = models.BooleanField(default=False, null=True)
 
 class BranchSupervisor(GovSupervisor):
     branchName = models.CharField(max_length=100, unique=True)

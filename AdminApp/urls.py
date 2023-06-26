@@ -5,5 +5,13 @@ from django.conf import settings
 
 
 urlpatterns=[
-    url('administratorLogin/',views.AdministratorLoginApi)
+    url('administratorLogin/',views.AdministratorLoginApi),
+    url('getAllUnapprovedAgencySupervisors/', views.GetAllUnapprovedAgencySupervisorsApi),
+    url('getAllUnapprovedBranchSupervisors/', views.GetAllUnapprovedBranchSupervisorsApi),
+    url('deleteAgencySupervisorFromDatabase/', views.DeleteAgencySupervisorFromDatabaseApi),
+    url('deleteBranchSupervisorFromDatabase/', views.DeleteBranchSupervisorFromDatabaseApi),
+    url('approveAgencySupervisor/', views.ApproveAgencySupervisorApi),
+    url('approveBranchSupervisor/', views.ApproveBranchSupervisorApi),
+
+
 ] 

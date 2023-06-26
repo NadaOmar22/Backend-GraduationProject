@@ -163,3 +163,24 @@ def GetAgencySupervisorByIdApi(request):
         return JsonResponse(response,safe=False)
     else:
        return JsonResponse("Error: Wrong Method Type",safe=False)
+
+@csrf_exempt
+def GetTotalNumberOfEachUserApi(request):
+    if request.method=='POST':
+        citizenObjects = Citizen.objects.all()
+        branchSupervisorObjects = BranchSupervisor.objects.all()
+        agencySupervisorObjects = AgencySupervisor.objects.all()
+
+        response = {
+            "citizensCount": len(citizenObjects),
+            "branchSupervisorsCount": len(branchSupervisorObjects),
+            "agencySupervisorsCount": len(agencySupervisorObjects)
+        }
+    return JsonResponse(response,safe=False)
+
+    
+           
+
+        
+
+

@@ -16,6 +16,9 @@ urlpatterns=[
     url('addreview/', views.CitizenAddReviewApi), 
     url('getCitizenByEmail/',views.GetCitizenByEmailApi),
     url('getBranchSupervisorById/', views.GetBranchSupervisorByIdApi),
-    url('getAgencySupervisorById/', views.GetAgencySupervisorByIdApi)
+    url('getAgencySupervisorById/', views.GetAgencySupervisorByIdApi),
+    url('getTotalNumberOfEachUser/', views.GetTotalNumberOfEachUserApi),
+
+
 
 ] 

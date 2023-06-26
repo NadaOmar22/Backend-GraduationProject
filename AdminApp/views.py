@@ -3,6 +3,8 @@ from .models import Administrator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
+from AuthApp.models import AgencySupervisor, BranchSupervisor
+
 
 @csrf_exempt
 def AdministratorLoginApi(request):
@@ -13,3 +15,78 @@ def AdministratorLoginApi(request):
             return JsonResponse("LoggedIn Successfully!!", safe=False)
         return JsonResponse("Invalid username or password.",safe=False)
         
+
+@csrf_exempt
+def GetAllUnapprovedAgencySupervisorsApi(request):
+    if request.method=='POST':
+        agencySupervisorObjects = AgencySupervisor.objects.filter(isApproved = False)
+        agencySupervisorsList = []
+        for agencySupervisor in agencySupervisorObjects:
+            agencySupervisorData = {
+                "name": agencySupervisor.name,
+                "govId":agencySupervisor.govId
+            }
+            agencySupervisorsList.append(agencySupervisorData)
+        return JsonResponse(agencySupervisorsList,safe=False)
+
+@csrf_exempt
+def GetAllUnapprovedBranchSupervisorsApi(request):
+    if request.method=='POST':
+        branchSupervisorObjects = BranchSupervisor.objects.filter(isApproved = False)
+        branchSupervisorsList = []
+        for agencySupervisor in branchSupervisorObjects:
+            branchSupervisorData = {
+                "name": agencySupervisor.name,
+                "govId":agencySupervisor.govId
+            }
+            branchSupervisorsList.append(branchSupervisorData)
+        return JsonResponse(branchSupervisorsList,safe=False)
+    
+@csrf_exempt
+def DeleteAgencySupervisorFromDatabaseApi(request):
+    if request.method=='POST':
+        request_data = JSONParser().parse(request)
+        try:
+            agencySupervisor = AgencySupervisor.objects.get(govId = request_data['govId'])
+            agencySupervisor.delete()
+        except AgencySupervisor.DoesNotExist:
+            return JsonResponse("AgencySupervisor Not Found!!",safe=False) 
+        return JsonResponse("AgencySupervisor Deleted Successfully!!",safe=False)
+
+
+@csrf_exempt
+def DeleteBranchSupervisorFromDatabaseApi(request):
+    if request.method=='POST':
+        request_data = JSONParser().parse(request)
+        try:
+            branchSupervisor = BranchSupervisor.objects.get(govId = request_data['govId'])
+            branchSupervisor.delete()
+        except BranchSupervisor.DoesNotExist:
+            return JsonResponse("BranchSupervisor Not Found!!",safe=False) 
+        return JsonResponse("BranchSupervisor Deleted Successfully!!",safe=False)
+    
+    
+@csrf_exempt
+def ApproveAgencySupervisorApi(request):
+    if request.method=='POST':
+        request_data = JSONParser().parse(request)
+        try:
+            agencySupervisor = AgencySupervisor.objects.get(govId = request_data['govId'])
+            agencySupervisor.isApproved = True
+            agencySupervisor.save()
+        except AgencySupervisor.DoesNotExist:
+            return JsonResponse("AgencySupervisor Not Found!!",safe=False) 
+        return JsonResponse("AgencySupervisor Approved Successfully!!",safe=False)
+
+
+@csrf_exempt
+def ApproveBranchSupervisorApi(request):
+    if request.method=='POST':
+        request_data = JSONParser().parse(request)
+        try:
+            branchSupervisor = BranchSupervisor.objects.get(govId = request_data['govId'])
+            branchSupervisor.isApproved = True
+            branchSupervisor.save()
+        except BranchSupervisor.DoesNotExist:
+            return JsonResponse("BranchSupervisor Not Found!!",safe=False) 
+        return JsonResponse("BranchSupervisor Approved Successfully!!",safe=False)
