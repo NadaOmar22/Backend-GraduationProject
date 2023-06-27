@@ -89,7 +89,7 @@ def CitizenAddReviewApi(request):
 
 @csrf_exempt
 def CitizenReviewsHistoryApi(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         citizen_data=JSONParser().parse(request)
         currentCitizen = Citizen.objects.get(nationalId=citizen_data['nationalId'])
         return JsonResponse (str(Review.objects.filter(source = currentCitizen).values()), safe=False)

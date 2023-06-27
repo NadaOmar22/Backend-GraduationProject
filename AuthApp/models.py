@@ -11,6 +11,8 @@ class Citizen(User):
    nationalId = models.CharField(max_length=14, null=True)
    email = models.EmailField(max_length=50, default='test@example.com', unique=True)
    phoneNumber = models.CharField(max_length=11)
+
+   
    
 class GovSupervisor(User):
     govId = models.CharField(max_length=100, unique=True)
