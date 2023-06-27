@@ -8,9 +8,7 @@ from ModelApp.models import Review
 from AuthApp.models import Citizen, AgencySupervisor, BranchSupervisor
 from ModelApp.MachineModel.sentimentanalysis_gpmodel import prediction
 from AuthApp.serializers import CitizenSignupSerializer, BranchSupervisorSignupSerializer, AgencySupervisorSignupSerializer
-from ModelApp.serializers import ReviewSerializer
-from django.core.files.storage import default_storage
-from rest_framework.response import Response
+
 
 @csrf_exempt
 def CitizenSignupApi(request):
@@ -69,7 +67,7 @@ def GetCitizenByEmailApi(request):
 def CitizenAddReviewApi(request):
     if request.method == 'POST':
         review_data=JSONParser().parse(request)
-        citizen = Citizen.objects.get(nationalId=review_data['source'])
+        citizen = Citizen.objects.get(email=review_data['email'])
         facility = Facility.objects.get(name=review_data['destination'])
         branch = Branch.objects.get(name=review_data['relatedBranch'])
 
@@ -91,8 +89,17 @@ def CitizenAddReviewApi(request):
 def CitizenReviewsHistoryApi(request):
     if request.method == 'POST':
         citizen_data=JSONParser().parse(request)
-        currentCitizen = Citizen.objects.get(nationalId=citizen_data['nationalId'])
-        return JsonResponse (str(Review.objects.filter(source = currentCitizen).values()), safe=False)
+        currentCitizen = Citizen.objects.get(email=citizen_data['email'])
+        reviews = Review.objects.filter(source = currentCitizen)
+        response = []
+        for review in reviews:
+            dict = {
+                "description": review.description,
+                "state": review.state,
+                "destination" : review.destination.name
+            }
+            response.append(dict)
+        return JsonResponse (response , safe=False)
     else:
        return JsonResponse ("Error: Wrong Method Type",safe=False)   
 
