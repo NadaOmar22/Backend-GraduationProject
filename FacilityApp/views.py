@@ -262,3 +262,14 @@ def ScrapDocumentApi(request):
     }
 
     return JsonResponse(response,safe=False)
+
+
+@csrf_exempt
+def GetAllServicesApi(request):
+    services = Service.objects.all()
+    response = []
+    for service in services:
+        data = ServiceSerializer(service)
+        response.append(data.data)
+    return JsonResponse(response, safe = False)
+
