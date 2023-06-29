@@ -16,8 +16,7 @@ def AdministratorLoginApi(request):
         obj = Administrator.load()
         if obj.username == administrator_data['username'] and obj.password  == administrator_data['password']:
             return JsonResponse("LoggedIn Successfully!!", safe=False)
-        return JsonResponse("Invalid username or password.",safe=False)
-        
+        return JsonResponse("Invalid username or password.",safe=False)     
 
 @csrf_exempt
 def GetAllUnapprovedAgencySupervisorsApi(request):
@@ -56,7 +55,6 @@ def DeleteAgencySupervisorFromDatabaseApi(request):
             return JsonResponse("AgencySupervisor Not Found!!",safe=False) 
         return JsonResponse("AgencySupervisor Deleted Successfully!!",safe=False)
 
-
 @csrf_exempt
 def DeleteBranchSupervisorFromDatabaseApi(request):
     if request.method=='POST':
@@ -67,7 +65,6 @@ def DeleteBranchSupervisorFromDatabaseApi(request):
         except BranchSupervisor.DoesNotExist:
             return JsonResponse("BranchSupervisor Not Found!!",safe=False) 
         return JsonResponse("BranchSupervisor Deleted Successfully!!",safe=False)
-    
     
 @csrf_exempt
 def ApproveAgencySupervisorApi(request):
@@ -81,7 +78,6 @@ def ApproveAgencySupervisorApi(request):
             return JsonResponse("AgencySupervisor Not Found!!",safe=False) 
         return JsonResponse("AgencySupervisor Approved Successfully!!",safe=False)
 
-
 @csrf_exempt
 def ApproveBranchSupervisorApi(request):
     if request.method=='POST':
@@ -93,55 +89,7 @@ def ApproveBranchSupervisorApi(request):
         except BranchSupervisor.DoesNotExist:
             return JsonResponse("BranchSupervisor Not Found!!",safe=False) 
         return JsonResponse("BranchSupervisor Approved Successfully!!",safe=False)
-"""
-@csrf_exempt
-def createAgencyApi(request):
-    if request.method == 'POST':
-        request_data = JSONParser().parse(request)
-        agencyName = request_data['agencyName']
-        branches = request_data['branches']
-        for branch in branches:
-            branchName = branch['branchName']
-            services = branch['services']
-            branchObj = Branch(name = branchName)
-            for service in services:
-                serviceName = service['serviceName']
-                type = service['type']
-                documents = service['documents']
-                documentObjs = []
-                serviceObj = Service(serviceName = serviceName, type = type)
-                for document in documents:
-                    documentObj = Document(document['name'])
-                    documentObj.save()
-                    serviceObj.documents.add(documentObj)"""
-
-"""
-@csrf_exempt
-def CreateAgencyApi(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        agencyName = data['agencyName']
-        branches_data = data['branches']
-        agency = Agency(name=agencyName)
-        for branch_data in branches_data:
-            branch_services_data = branch_data['services']
-            branch = Branch(name=branch_data['branchName'])
-            for service_data in branch_services_data:
-                service_documents_data = service_data['documents']
-                service = Service(name=service_data['serviceName'],type=service_data['serviceType'])
-                for document_data in service_documents_data:
-                    document = Document(name=document_data['documentName'])
-                    document.save()
-                    service.documents.add(document)
-                service.save()
-                branch.services.add(service)
-            branch.save()
-            agency.branches.add(branch)
-        agency.save()
-        return JsonResponse({'status': 'success'})
-    else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
-"""
+ 
 @csrf_exempt
 def CreateAgencyApi(request):
     if request.method == 'POST':
@@ -203,3 +151,11 @@ def CreateAgencyApi(request):
         return JsonResponse({'status': 'تم اضافه الجهه بنجاح'})
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+
+"""
+@csrf_exempt
+def addAppApi(request):
+    if request.method=='POST':
+
+"""
