@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 from AuthApp.models import AgencySupervisor, BranchSupervisor
-from FacilityApp.models import Document, Service
+from FacilityApp.models import Document, Service, App
 from AgencyApp.models import Agency, Branch
 
 
@@ -153,9 +153,29 @@ def CreateAgencyApi(request):
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 
-"""
 @csrf_exempt
-def addAppApi(request):
+def AddAppApi(request):
     if request.method=='POST':
+        app_data = JSONParser().parse(request)
+        newAPP = App(
+                name = app_data["name"],
+                rate = app_data["rate"],
+                englishName = app_data["englishName"],
+                link = app_data["link"],
+                description = app_data["description"],
+                cover = app_data["cover"]
+        )
+        newAPP.save()
+        return JsonResponse("Added Successfully!!" , safe=False)
+    
 
-"""
+@csrf_exempt
+def DeleteAppApi(request):
+    if request.method=='POST':
+        app_data = JSONParser().parse(request)
+        try:
+            app_obj = App.objects.filter(name = app_data["name"])
+            app_obj.delete()
+        except App.DoesNotExist:
+            return JsonResponse("app Not Found!!",safe=False) 
+        return JsonResponse("App Deleted Successfully!!", safe=False)

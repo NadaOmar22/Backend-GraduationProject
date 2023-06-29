@@ -12,7 +12,7 @@ urlpatterns=[
     url('deleteBranchSupervisorFromDatabase/', views.DeleteBranchSupervisorFromDatabaseApi),
     url('approveAgencySupervisor/', views.ApproveAgencySupervisorApi),
     url('approveBranchSupervisor/', views.ApproveBranchSupervisorApi),
-    url('createAgency/', views.CreateAgencyApi)
-
-
+    url('createAgency/', views.CreateAgencyApi),
+    url('addApp/', views.AddAppApi),
+    url('deleteApp/', views.DeleteAppApi),
 ] 
