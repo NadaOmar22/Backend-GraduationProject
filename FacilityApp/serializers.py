@@ -5,6 +5,7 @@ class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
         fields = '__all__'
+    
 
 class ServiceSerializer(serializers.ModelSerializer):
     documents = DocumentSerializer(many=True)

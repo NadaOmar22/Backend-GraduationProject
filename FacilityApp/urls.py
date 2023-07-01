@@ -11,7 +11,7 @@ urlpatterns=[
    url('documentsForService/', views.GetDocumentsForServiceAPI),   
    url('servicesByType/', views.GetServicesWithSpecificTypeAPI),
    url('addDocument/', views.AddDocumentAPI),
-   url('addService/', views.AddServiceAPI),
+   url('addServiceForAgency/', views.AddServiceForAgencyAPI),
    path('media/covers/<path:filename>/', views.ServeImage),
    url('serviceReviewsFilteredByYear/', views.ServiceReviewsFilteredByYearApi),
    url('branchReviewsFilteredByYear/', views.BranchReviewsFilteredByYearApi),
