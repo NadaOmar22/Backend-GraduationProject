@@ -110,13 +110,19 @@ def AddDocumentAPI(request):
 def AddServiceForAgencyAPI(request):
     if request.method == 'POST':
         serviceData = JSONParser().parse(request)
-        agency = Agency(name=serviceData['agencyName'])
         
-        service = Service(name=serviceData['serviceName'], type=serviceData['serviceType'])
-        service_exists = Service.objects.filter(name=service.name, type=service.type).exists()
+        agency = Agency(name=serviceData['agencyName'])
+        agency_exists = Agency.objects.filter(name=agency.name).exists()
+        if agency_exists:
+            agency = Agency.objects.get(name=agency.name)
+        else:
+            agency.save()
+
+        service = Service(name=serviceData['serviceName'])
+        service_exists = Service.objects.filter(name=service.name).exists()
         if service_exists:
             print(service_exists)
-            service = Service.objects.get(name=service.name, type=service.type)
+            service = Service.objects.get(name=service.name)
         else:
             service.save()
 
@@ -131,7 +137,9 @@ def AddServiceForAgencyAPI(request):
                 serviceDocuments.append(document)
         service.documents.set(serviceDocuments)
         service.save()
-   
+        agency.allServices.add(service)
+        agency.save()
+
         return JsonResponse("Added Successfully!!" , safe=False)
     return JsonResponse("Failed to Add.",safe=False)
     

@@ -19,7 +19,6 @@ urlpatterns=[
     url('getAgencySupervisorById/', views.GetAgencySupervisorByIdApi),
     url('getTotalNumberOfEachUser/', views.GetTotalNumberOfEachUserApi),
     url('getAllAgencyServicesForBranchSupervisor/', views.GetAllAgencyServicesForBranchSupervisor),
-
-
+    url('getAllAgencyServicesForAgencySupervisor/', views.GetAllAgencyServicesForAgencySupervisor),
 
 ] 

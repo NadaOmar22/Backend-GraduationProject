@@ -229,6 +229,20 @@ def GetAllAgencyServicesForBranchSupervisor(request):
     
            
 
+@csrf_exempt
+def GetAllAgencyServicesForAgencySupervisor(request):
+    if request.method == 'POST':
+        request_data=JSONParser().parse(request)
+        agencySupervisor = AgencySupervisor.objects.get(govId = request_data['govId'])
+        services = agencySupervisor.agency.allServices.all()
         
+        agencyServices  = []
+        for service in services:
+            agencyServices.append(service.name)
 
-
+        if(len(agencyServices) == 0):
+            return JsonResponse("services list in agency is empty", safe=False)
+        
+        return JsonResponse(agencyServices, safe=False)
+    return JsonResponse("wrong method type", safe=False)
+    

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password
-from AgencyApp.models import Branch
+from AgencyApp.models import Branch, Agency
 
 class User(models.Model):
     userId = models.AutoField(primary_key=True)
@@ -25,6 +25,7 @@ class BranchSupervisor(GovSupervisor):
     branchName = models.CharField(max_length=100, unique=True)
 
 class AgencySupervisor(GovSupervisor):
+    agency = models.OneToOneField(Agency, on_delete=models.CASCADE, null=True)
     agencyName = models.CharField(max_length=100, unique=True)
 
  
