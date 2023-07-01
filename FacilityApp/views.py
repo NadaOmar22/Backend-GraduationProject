@@ -177,19 +177,20 @@ def BranchReviewsFilteredByYearApi(request):
         neutralList = []
 
         for review in reviews:
-            dict = {
-                    "description":review.description,
-                    "serviceName":review.destination.name,
-                    "state": review.state,
-                    'date': review.date,
-                    'reviewId' : review.reviewId
-                }
-            if review.polarity == "positive":  
-                positiveList.append(dict)
-            elif review.polarity == "negative":
-                negativeList.append(dict)
-            elif review.polarity == "neutral":
-                neutralList.append(dict)
+            if review.relatedBranch.services.all().filter(name=review.destination.name).exists():
+                dict = {
+                        "description":review.description,
+                        "serviceName":review.destination.name,
+                        "state": review.state,
+                        'date': review.date,
+                        'reviewId' : review.reviewId
+                    }
+                if review.polarity == "positive":  
+                    positiveList.append(dict)
+                elif review.polarity == "negative":
+                    negativeList.append(dict)
+                elif review.polarity == "neutral":
+                    neutralList.append(dict)
          
         response_data = {
             'positiveList': positiveList,

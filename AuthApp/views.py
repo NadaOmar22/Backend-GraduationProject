@@ -222,7 +222,6 @@ def GetAllAgencyServicesForBranchSupervisor(request):
         response = {
            "agencyServices": agencyServices,
            "branchServices": branchServices
-
         }
 
         return JsonResponse(response, safe=False)
