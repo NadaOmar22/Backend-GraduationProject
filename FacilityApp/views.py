@@ -8,7 +8,7 @@ from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import ServiceSerializer, DocumentSerializer
-from AgencyApp.models import Branch
+from AgencyApp.models import Branch,Agency
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 import requests
@@ -107,16 +107,33 @@ def AddDocumentAPI(request):
         return JsonResponse("Failed to Add.",safe=False)
     
 @csrf_exempt   
-def AddServiceAPI(request):
+def AddServiceForAgencyAPI(request):
     if request.method == 'POST':
         serviceData = JSONParser().parse(request)
-        print(serviceData)
-        serviceSerializer = ServiceSerializer(data = serviceData)
-        print(serviceSerializer)
-        if serviceSerializer.is_valid():
-            serviceSerializer.save()
-            return JsonResponse("Added Successfully!!" , safe=False)
-        return JsonResponse("Failed to Add.",safe=False)
+        agency = Agency(name=serviceData['agencyName'])
+        
+        service = Service(name=serviceData['serviceName'], type=serviceData['serviceType'])
+        service_exists = Service.objects.filter(name=service.name, type=service.type).exists()
+        if service_exists:
+            print(service_exists)
+            service = Service.objects.get(name=service.name, type=service.type)
+        else:
+            service.save()
+
+        serviceDocuments = []
+        for document_data in serviceData['documents']:
+            document = Document(name=document_data['documentName'])
+            document_exists = Document.objects.filter(name=document.name).exists()
+            if document_exists:
+                document = Document.objects.get(name=document.name)
+            else:
+                document.save()
+                serviceDocuments.append(document)
+        service.documents.set(serviceDocuments)
+        service.save()
+   
+        return JsonResponse("Added Successfully!!" , safe=False)
+    return JsonResponse("Failed to Add.",safe=False)
     
 
 @csrf_exempt
