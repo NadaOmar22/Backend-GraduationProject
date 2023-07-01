@@ -7,5 +7,6 @@ class Branch(models.Model):
 
 class Agency (models.Model):
     name = models.CharField(max_length = 100)
+    allServices = models.ManyToManyField(Service, related_name = 'agency', null = True)
     branches = models.ManyToManyField(Branch, related_name = 'govAgencies', null = True)
 

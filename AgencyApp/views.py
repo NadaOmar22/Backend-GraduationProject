@@ -2,6 +2,7 @@ from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import BranchSerializer, AgencySerializer
 from FacilityApp.models import Service
+from AuthApp.models import BranchSupervisor
 from rest_framework.parsers import JSONParser
 from AgencyApp.models import Branch, Agency
 from django.core import serializers
@@ -54,6 +55,22 @@ def GetAgenciesForAdminApi(request):
             response.append(newAgencyData)
     return JsonResponse(response, safe=False)
 
+@csrf_exempt 
+def UpdateBranchServicesApi(request):
+    if request.method == 'POST':
+        request_data = JSONParser().parse(request)
+        branchSupervisor = BranchSupervisor.objects.get(govId = request_data['govId'])
+        servicesObj = []
+        for serviceName in request_data['services']:
+            service = Service.objects.get(name = serviceName)
+            servicesObj.append(service)
+        branchSupervisor.branch.services.set(servicesObj)
+        return JsonResponse("new services add", safe=False)
 
+    return JsonResponse("wrong method type", safe=False)
+        
+
+
+        
 
 

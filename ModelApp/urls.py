@@ -5,5 +5,6 @@ from django.conf import settings
 
 urlpatterns = [
    url('predict/',views.predict),
+   url('updateReviewState/', views.UpdateReviewStateAPI)
 ]
 

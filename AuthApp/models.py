@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password
+from AgencyApp.models import Branch
 
 class User(models.Model):
     userId = models.AutoField(primary_key=True)
@@ -20,6 +21,7 @@ class GovSupervisor(User):
     isApproved = models.BooleanField(default=False, null=True)
 
 class BranchSupervisor(GovSupervisor):
+    branch =  models.OneToOneField(Branch, on_delete=models.CASCADE, null=True)
     branchName = models.CharField(max_length=100, unique=True)
 
 class AgencySupervisor(GovSupervisor):

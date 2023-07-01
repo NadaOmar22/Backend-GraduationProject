@@ -1,10 +1,12 @@
 from django.views.decorators.csrf import csrf_exempt
 from FacilityApp.models import Facility
 from AgencyApp.models import Branch
+from AgencyApp.serializers import BranchSerializer
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 
 from ModelApp.models import Review
+from AgencyApp.models import Agency
 from AuthApp.models import Citizen, AgencySupervisor, BranchSupervisor
 from ModelApp.MachineModel.sentimentanalysis_gpmodel import prediction
 from AuthApp.serializers import CitizenSignupSerializer, BranchSupervisorSignupSerializer, AgencySupervisorSignupSerializer
@@ -185,6 +187,46 @@ def GetTotalNumberOfEachUserApi(request):
         }
     return JsonResponse(response,safe=False)
 
+@csrf_exempt
+def GetAllAgencyServicesForBranchSupervisor(request):
+    if request.method == 'POST':
+        request_data=JSONParser().parse(request)
+        branchSupervisor = BranchSupervisor.objects.get(govId = request_data['govId'])
+        targetBranch = Branch.objects.get(name = branchSupervisor.branch.name)
+        agencies = Agency.objects.all()
+        targetAgency = Agency()
+        found = False
+        for agency in agencies:
+            for agencyBranch in agency.branches.all():
+                if agencyBranch == targetBranch:
+                    targetAgency = agency
+                    found = True
+                    break
+            if (found == True):
+                break
+        
+        agencyServices  = []
+        branchServices = []
+        for service in targetBranch.services.all():
+            branchServices.append(service.name)
+        
+        for service in targetAgency.allServices.all():
+            if(service.name not in branchServices):
+                agencyServices.append(service.name)
+
+        if(len(agencyServices) == 0):
+            return JsonResponse("services list in agency is empty", safe=False)
+        if(len(branchServices) == 0):
+            return JsonResponse("services list in branch is empty", safe=False)
+        
+        response = {
+           "agencyServices": agencyServices,
+           "branchServices": branchServices
+
+        }
+
+        return JsonResponse(response, safe=False)
+    return JsonResponse("wrong method type", safe=False)
     
            
 

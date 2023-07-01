@@ -182,6 +182,7 @@ def BranchReviewsFilteredByYearApi(request):
                     "serviceName":review.destination.name,
                     "state": review.state,
                     'date': review.date,
+                    'reviewId' : review.reviewId
                 }
             if review.polarity == "positive":  
                 positiveList.append(dict)
