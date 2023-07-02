@@ -4,8 +4,8 @@ from django.conf import settings
 
 # Create your models here.
 class Facility(models.Model):
-    facilityId = models.AutoField(primary_key = True)
-    name = models.CharField(max_length = 70)
+    facilityId = models.AutoField(primary_key=True)
+    name = models.CharField(max_length = 70, unique=True)
 
 class Document(models.Model):
     name = models.CharField(max_length = 200)

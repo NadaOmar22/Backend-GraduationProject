@@ -17,6 +17,8 @@ urlpatterns=[
    url('branchReviewsFilteredByYear/', views.BranchReviewsFilteredByYearApi),
    url('reviewsYearsFilteredByBranch/', views.ReviewsYearsFilteredByBranchApi),
    url('scrapDocuments/', views.ScrapDocumentApi),
-   url('getAllServices/', views.GetAllServicesApi)
+   url('getAllServices/', views.GetAllServicesApi),
+   url('getAllDocuments/', views.GetAllDocumentsApi)
+
 ] 
 

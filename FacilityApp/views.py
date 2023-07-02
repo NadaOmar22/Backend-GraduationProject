@@ -300,3 +300,10 @@ def GetAllServicesApi(request):
         response.append(data.data)
     return JsonResponse(response, safe = False)
 
+@csrf_exempt
+def GetAllDocumentsApi(request):
+    documents = Document.objects.all()
+    response = []
+    for document in documents:
+        response.append(document.name)
+    return JsonResponse(response, safe = False)   
