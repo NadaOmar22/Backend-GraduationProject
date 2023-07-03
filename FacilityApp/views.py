@@ -309,3 +309,27 @@ def GetAllDocumentsApi(request):
     for document in documents:
         response.append(document.name)
     return JsonResponse(response, safe = False)   
+
+@csrf_exempt
+def UpdateServiceApi(request):
+    if request.method == 'POST':
+        request_data = JSONParser().parse(request)
+        serviceObj = Service.objects.get(name = request_data['name'])
+    
+        serviceDocuments = []
+        for document_data in request_data['documents']:
+            document_exists = Document.objects.filter(name=document_data['name']).exists()
+            if document_exists:
+                document = Document.objects.get(name=document_data['name'])
+            else:
+                document = Document(name=document_data['name'])
+                document.save()
+            serviceDocuments.append(document)
+        
+        serviceObj.documents.set(serviceDocuments)
+        serviceObj.save()
+            
+        return JsonResponse("Updates Saved!!", safe = False)
+    return JsonResponse("Wrong Method Type!!", safe = False)
+    
+       
