@@ -6,7 +6,7 @@ class BranchSerializer(serializers.ModelSerializer):
     services = ServiceSerializer(many=True)
     class Meta:
         model = Branch
-        fields = ('name', 'services')
+        fields = ('name', 'services')       
 
 class AgencySerializer(serializers.ModelSerializer):
     branches = BranchSerializer(many=True)

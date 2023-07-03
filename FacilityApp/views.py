@@ -1,19 +1,22 @@
+from django.db.models.functions import ExtractYear 
 from ModelApp.models import Review
 from FacilityApp.models import Facility, Document
-from http.client import HTTPResponse
+#from http.client import HTTPResponse
 from django.http import Http404 , FileResponse
 import os
 from FacilityApp.models import  App, Service
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+
+from ModelApp.serializers import ReviewSerializer
 from .serializers import ServiceSerializer, DocumentSerializer
 from AgencyApp.models import Branch,Agency
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 import requests
 from bs4 import BeautifulSoup
-import csv
+#import csv
 
 
 @csrf_exempt
@@ -228,6 +231,59 @@ def BranchReviewsFilteredByYearApi(request):
         return JsonResponse(response_data, safe=False)
     return JsonResponse("Invalid.",safe=False)  
  
+
+@csrf_exempt
+def AgencyReviewsFilteredByYearApi(request):
+    if request.method == 'POST':
+        request_data = JSONParser().parse(request)
+        agencyObj = Agency.objects.get(name = request_data['agencyName'])
+        year = request_data['year']
+        agencyServices = agencyObj.allServices.all();
+         
+        positiveList = []
+        negativeList = []
+        neutralList = []
+
+        for service in agencyServices:
+           reviews = Review.objects.filter(destination = service, date__year = year)
+           for review in reviews:
+                reviewSerializer = ReviewSerializer(review) 
+                print(reviewSerializer.data)
+                if review.polarity == "positive":  
+                    positiveList.append(reviewSerializer.data)
+                elif review.polarity == "negative":
+                    negativeList.append(reviewSerializer.data)
+                elif review.polarity == "neutral":
+                    neutralList.append(reviewSerializer.data)
+
+        response_data = {
+            'positiveList': positiveList,
+            'negativeList': negativeList,
+            'neutralList': neutralList
+        }            
+        return JsonResponse(response_data, safe=False)
+    
+    return JsonResponse("Invalid.",safe=False) 
+
+
+@csrf_exempt
+def ReviewsYearsFilteredByAgencyApi(request):
+    if request.method == 'POST':
+        request_data = JSONParser().parse(request)
+        agencyObj = Agency.objects.get(name = request_data['agencyName'])
+
+        reviewsYear = set()
+        servicesForAgency = agencyObj.allServices.all()
+        for service in  servicesForAgency:
+            reviews = Review.objects.filter(destination=service)
+            years = reviews.annotate(year=ExtractYear('date'))
+            years = years.values_list('year', flat=True).distinct()
+            years = list(years)
+            reviewsYear = reviewsYear.union(set(years))
+        
+        return JsonResponse(list(reviewsYear), safe=False)
+    return JsonResponse("Invalid.",safe=False)
+
 
 @csrf_exempt
 def ReviewsYearsFilteredByBranchApi(request):

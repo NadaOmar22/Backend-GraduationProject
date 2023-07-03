@@ -15,6 +15,10 @@ urlpatterns=[
    path('media/covers/<path:filename>/', views.ServeImage),
    url('serviceReviewsFilteredByYear/', views.ServiceReviewsFilteredByYearApi),
    url('branchReviewsFilteredByYear/', views.BranchReviewsFilteredByYearApi),
+
+   url('agencyReviewsFilteredByYear/', views.AgencyReviewsFilteredByYearApi),
+   url('reviewsYearsFilteredByAgency/', views.ReviewsYearsFilteredByAgencyApi),
+
    url('reviewsYearsFilteredByBranch/', views.ReviewsYearsFilteredByBranchApi),
    url('scrapDocuments/', views.ScrapDocumentApi),
    url('getAllServices/', views.GetAllServicesApi),

@@ -12,3 +12,4 @@ class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
         fields = ('name', 'type', 'documents') 
+
