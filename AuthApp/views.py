@@ -1,5 +1,6 @@
 from django.views.decorators.csrf import csrf_exempt
 from FacilityApp.models import Facility
+from FacilityApp.serializers import DocumentSerializer
 from AgencyApp.models import Branch
 from AgencyApp.serializers import BranchSerializer
 from rest_framework.parsers import JSONParser
@@ -226,19 +227,31 @@ def GetAllAgencyServicesForBranchSupervisor(request):
 
         return JsonResponse(response, safe=False)
     return JsonResponse("wrong method type", safe=False)
-    
-           
-
+        
 @csrf_exempt
 def GetAllAgencyServicesForAgencySupervisor(request):
     if request.method == 'POST':
         request_data=JSONParser().parse(request)
         agencySupervisor = AgencySupervisor.objects.get(govId = request_data['govId'])
         services = agencySupervisor.agency.allServices.all()
+        branches = agencySupervisor.agency.branches.all()
         
         agencyServices  = []
         for service in services:
-            agencyServices.append(service.name)
+            branchesForService = []
+            for branch in branches:
+                if branch.services.all().filter(name=service.name).exists():
+                    branchesForService.append(branch.name)
+            documentsList = []
+            for document in service.documents.all():
+                document = DocumentSerializer(document)
+                documentsList.append(document.data)
+            dic = {
+                "name": service.name,
+                "branches": branchesForService,
+                "documents": documentsList
+            }
+            agencyServices.append(dic)
 
         if(len(agencyServices) == 0):
             return JsonResponse("services list in agency is empty", safe=False)

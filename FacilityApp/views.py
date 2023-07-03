@@ -116,13 +116,15 @@ def AddServiceForAgencyAPI(request):
         if agency_exists:
             agency = Agency.objects.get(name=agency.name)
         else:
-            agency.save()
+            return JsonResponse("Error: Agency Name Does't Exsit" , safe=False)
+            #agency.save()
 
         service = Service(name=serviceData['serviceName'])
         service_exists = Service.objects.filter(name=service.name).exists()
         if service_exists:
             print(service_exists)
-            service = Service.objects.get(name=service.name)
+            return JsonResponse("Error: Service Name Already Exit" , safe=False)
+            #service = Service.objects.get(name=service.name)
         else:
             service.save()
 
