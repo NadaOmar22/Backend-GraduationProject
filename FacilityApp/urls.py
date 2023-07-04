@@ -13,11 +13,10 @@ urlpatterns=[
    url('addDocument/', views.AddDocumentAPI),
    url('addServiceForAgency/', views.AddServiceForAgencyAPI),
    path('media/covers/<path:filename>/', views.ServeImage),
-   url('serviceReviewsFilteredByYear/', views.ServiceReviewsFilteredByYearApi),
    url('branchReviewsFilteredByYear/', views.BranchReviewsFilteredByYearApi),
 
+   url('serviceReviewsFilteredByYear/', views.ServiceReviewsFilteredByYearApi),
    url('agencyReviewsFilteredByYear/', views.AgencyReviewsFilteredByYearApi),
-   
    url('reviewsYearsFilteredByAgency/', views.ReviewsYearsFilteredByAgencyApi),
 
    url('reviewsYearsFilteredByBranch/', views.ReviewsYearsFilteredByBranchApi),

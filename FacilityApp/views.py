@@ -36,7 +36,6 @@ def ServeImage(request, filename):
     if os.path.exists(file_path):
         image = open(file_path, 'rb')  #rb : binary format
         response = FileResponse(image)
-        print(response)
         return response
     raise Http404
 
@@ -64,7 +63,6 @@ def GetServicesForBranchAPI(request):
         requestData = JSONParser().parse(request)
         branchObj = Branch.objects.get(name = requestData['branchName'])   
         services = branchObj.services.all()
-        print(services)
         response = []
         for service in services:
             serviceSerializer = ServiceSerializer(service)
@@ -126,7 +124,6 @@ def AddServiceForAgencyAPI(request):
         service = Service(name=serviceData['serviceName'])
         service_exists = Service.objects.filter(name=service.name).exists()
         if service_exists:
-            print(service_exists)
             return JsonResponse("Error: Service Name Already Exit" , safe=False)
             #service = Service.objects.get(name=service.name)
         else:
@@ -153,14 +150,17 @@ def AddServiceForAgencyAPI(request):
 @csrf_exempt
 def ServiceReviewsFilteredByYearApi(request):
     if request.method == 'POST':
-        print(request)
         request_data = JSONParser().parse(request)
         year = request_data['year']
         facilityObj = Facility.objects.get(name = request_data['serviceName'])
+
         reviews = []
-        if request_data['supervisonType'] == 'agencySupervisor':
+        print("befooooooore")
+        if (request_data['branchName'] == 'كل الفروع'):
+            print("in IFFFFFFFF")
             reviews = Review.objects.filter(destination = facilityObj, date__year = year)
-        elif request_data['supervisonType'] == 'branchSupervisor':
+        else:
+            print("IN ELSEEEEEE")
             branchObj = Branch.objects.get(name = request_data['branchName'])
             reviews = Review.objects.filter(destination = facilityObj, relatedBranch = branchObj, date__year = year)
 
@@ -238,7 +238,6 @@ def AgencyReviewsFilteredByYearApi(request):
            reviews = Review.objects.filter(destination = service, date__year = year)
            for review in reviews:
                 reviewSerializer = ReviewSerializer(review) 
-                print(reviewSerializer.data)
                 if review.polarity == "positive":  
                     positiveList.append(reviewSerializer.data)
                 elif review.polarity == "negative":
