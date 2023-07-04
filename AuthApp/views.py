@@ -232,9 +232,9 @@ def GetAllAgencyServicesForBranchSupervisor(request):
 def GetAllAgencyServicesForAgencySupervisor(request):
     if request.method == 'POST':
         request_data=JSONParser().parse(request)
-        agencySupervisor = AgencySupervisor.objects.get(govId = request_data['govId'])
-        services = agencySupervisor.agency.allServices.all()
-        branches = agencySupervisor.agency.branches.all()
+        agency = Agency.objects.get(name = request_data['agencyName'])
+        services = agency.allServices.all()
+        branches = agency.branches.all()
         
         agencyServices  = []
         for service in services:

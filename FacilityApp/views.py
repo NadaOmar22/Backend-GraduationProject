@@ -67,7 +67,8 @@ def GetServicesForBranchAPI(request):
         print(services)
         response = []
         for service in services:
-            response.append(service.name)
+            serviceSerializer = ServiceSerializer(service)
+            response.append(serviceSerializer.data)
         return JsonResponse (response, safe=False)
     else:
         return JsonResponse("Error: Wrong Method Type", status=400)    
@@ -154,33 +155,27 @@ def ServiceReviewsFilteredByYearApi(request):
     if request.method == 'POST':
         print(request)
         request_data = JSONParser().parse(request)
-        facilityObj = Facility.objects.get(name = request_data['serviceName'])
-        branchObj = Branch.objects.get(name = request_data['branchName'])
-
         year = request_data['year']
-        
-        reviews = Review.objects.filter(destination = facilityObj, 
-                                        relatedBranch = branchObj,
-                                        date__year = year
-                                        )
+        facilityObj = Facility.objects.get(name = request_data['serviceName'])
+        reviews = []
+        if request_data['supervisonType'] == 'agencySupervisor':
+            reviews = Review.objects.filter(destination = facilityObj, date__year = year)
+        elif request_data['supervisonType'] == 'branchSupervisor':
+            branchObj = Branch.objects.get(name = request_data['branchName'])
+            reviews = Review.objects.filter(destination = facilityObj, relatedBranch = branchObj, date__year = year)
 
         positiveList = []
         negativeList = []
         neutralList = []
 
         for review in reviews:
-            dict = {
-                    "description":review.description,
-                    "state": review.state,
-                    "serviceName" : request_data['serviceName'],
-                    "date" : review.date
-                }
+            reviewSerliazer = ReviewSerializer(review)
             if review.polarity == "positive":  
-                positiveList.append(dict)
+                positiveList.append(reviewSerliazer.data)
             elif review.polarity == "negative":
-                negativeList.append(dict)
+                negativeList.append(reviewSerliazer.data)
             elif review.polarity == "neutral":
-                neutralList.append(dict)
+                neutralList.append(reviewSerliazer.data)
          
         response_data = {
             'positiveList': positiveList,
@@ -208,19 +203,14 @@ def BranchReviewsFilteredByYearApi(request):
 
         for review in reviews:
             if review.relatedBranch.services.all().filter(name=review.destination.name).exists():
-                dict = {
-                        "description":review.description,
-                        "serviceName":review.destination.name,
-                        "state": review.state,
-                        'date': review.date,
-                        'reviewId' : review.reviewId
-                    }
+                reviewSerializer = ReviewSerializer(review)
+                
                 if review.polarity == "positive":  
-                    positiveList.append(dict)
+                    positiveList.append(reviewSerializer.data)
                 elif review.polarity == "negative":
-                    negativeList.append(dict)
+                    negativeList.append(reviewSerializer.data)
                 elif review.polarity == "neutral":
-                    neutralList.append(dict)
+                    neutralList.append(reviewSerializer.data)
          
         response_data = {
             'positiveList': positiveList,
@@ -238,7 +228,7 @@ def AgencyReviewsFilteredByYearApi(request):
         request_data = JSONParser().parse(request)
         agencyObj = Agency.objects.get(name = request_data['agencyName'])
         year = request_data['year']
-        agencyServices = agencyObj.allServices.all();
+        agencyServices = agencyObj.allServices.all()
          
         positiveList = []
         negativeList = []
