@@ -101,7 +101,8 @@ def CreateAgencyApi(request):
         for branch_data in branches_data:
             branch_services_data = branch_data['services']
             branchName = branch_data['branchName']+' '+agencyName
-            new_branch = Branch(name=branchName)
+            branchLocation = branch_data['branchLocation']
+            new_branch = Branch(name=branchName, location=branchLocation)
             new_services = []
             for service_data in branch_services_data:
                 documents_data = service_data['documents']
@@ -157,6 +158,9 @@ def CreateAgencyApi(request):
 def AddAppApi(request):
     if request.method=='POST':
         app_data = JSONParser().parse(request)
+        if App.objects.filter(name=app_data["name"]).exists():
+            return JsonResponse("App already exists!!" , safe=False)
+        
         newAPP = App(
                 name = app_data["name"],
                 rate = app_data["rate"],

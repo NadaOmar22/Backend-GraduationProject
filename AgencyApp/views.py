@@ -83,7 +83,7 @@ def AddBranchApi(request):
         agencyObj = Agency.objects.get(name = request_data['agencyName'])
         
         if name and location:
-            newBranch = Branch(name=request_data['branchName'], location=request_data['location'])
+            newBranch = Branch(name=request_data['branchName'], location=location)
             newBranch.save()
             agencyObj.branches.add(newBranch)
     
