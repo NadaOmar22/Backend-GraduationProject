@@ -96,6 +96,15 @@ def AddBranchApi(request):
 
         
 @csrf_exempt 
-def deleteBranchApi(request):
-    pass
+def DeleteBranchApi(request):
+    if request.method == 'POST':
+        request_data = JSONParser().parse(request)
+        if request_data:
+            branch = Branch.objects.get(name=request_data['branchName'])
+            branch.delete()
+            return JsonResponse("Branch deleted successfully", safe=False)
+        return JsonResponse("branch name is required", safe=False)
+    return JsonResponse("error': 'Method not allowed" ,safe=False)    
+
+
 
