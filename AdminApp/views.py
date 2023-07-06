@@ -93,65 +93,23 @@ def ApproveBranchSupervisorApi(request):
 @csrf_exempt
 def CreateAgencyApi(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
+        data = JSONParser().parse(request)
         agencyName = data['agencyName']
-        branches_data = data['branches']
-        new_agency = Agency(name=agencyName)
-        new_branches = []
-        for branch_data in branches_data:
-            branch_services_data = branch_data['services']
-            branchName = branch_data['branchName']+' '+agencyName
-            branchLocation = branch_data['branchLocation']
-            new_branch = Branch(name=branchName, location=branchLocation)
-            new_services = []
-            for service_data in branch_services_data:
-                documents_data = service_data['documents']
-                service = Service(name=service_data['serviceName'], type=service_data['serviceType'])
-                service_exists = Service.objects.filter(name=service.name, type=service.type).exists()
-                if service_exists:
-                    print(service_exists)
-                    service = Service.objects.get(name=service.name, type=service.type)
-
-                new_documents = []
-                for document_data in documents_data:
-                    document = Document(name=document_data['documentName'])
-                    document_exists = Document.objects.filter(name=document.name).exists()
-                    if document_exists:
-                        document = Document.objects.get(name=document.name)
-                    else:
-                        document.save()
-                    new_documents.append(document)
-
-                #document_ids = new_documents.values_list('id', flat=True)  # Get a list of document IDs
-                service_exists = Service.objects.filter(name=service.name, type=service.type).exists()
-                if service_exists:
-                    service = Service.objects.get(name=service.name, type=service.type)
-                else:
-                    #service.documents.set([new_documents[0]])
-                    service.save()
-                    service.documents.set(new_documents)
-                    service.save()
-                new_services.append(service)
-
-            branch_exists = Branch.objects.filter(name=branchName).exists()
-            if branch_exists:
-                new_branch = Branch.objects.get(name=branchName)
-            else:
-                new_branch.save()
-                new_branch.services.set(new_services)
-                new_branch.save()
-            new_branches.append(new_branch)
-
         agency_exists = Agency.objects.filter(name=agencyName).exists()
         if agency_exists:
-            new_agency = Agency.objects.get(name=agencyName)
+            return JsonResponse("agency already exists", safe=False)
         else:
+            new_agency = Agency(name=agencyName)
+            branchName = data['branchName'] + ' ' + agencyName
+            branchLocation = data['branchLocation']
             new_agency.save()
-            new_agency.branches.set(new_branches)
+            new_branch = Branch(name=branchName, location=branchLocation)
+            new_branch.save()
+            new_agency.branches.add(new_branch)
             new_agency.save()
-        return JsonResponse({'status': 'تم اضافه الجهه بنجاح'})
+            return JsonResponse("agency created sucessfully!!", safe=False)
     else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+        return JsonResponse("wrong method type", safe=False)
 
 
 @csrf_exempt

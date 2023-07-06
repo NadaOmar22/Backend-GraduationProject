@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from AuthApp.models import Citizen, BranchSupervisor, AgencySupervisor
+from AgencyApp.serializers import BranchSerializer
+
 
 
 class CitizenSignupSerializer(serializers.ModelSerializer):
@@ -13,13 +15,14 @@ class CitizenSignupSerializer(serializers.ModelSerializer):
             'nationalId')
         
 class BranchSupervisorSignupSerializer(serializers.ModelSerializer):
+    branch = BranchSerializer()
     class Meta:
         model = BranchSupervisor
         fields = (
             'name',
             'password',
             'govId',
-            'branchName',
+            'branch',
             'supervisionType'
             )
 class AgencySupervisorSignupSerializer(serializers.ModelSerializer):

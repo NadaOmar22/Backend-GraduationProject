@@ -5,6 +5,7 @@ from AgencyApp.models import Branch
 from AgencyApp.serializers import BranchSerializer
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
+from rest_framework.renderers import JSONRenderer
 
 from ModelApp.models import Review
 from AgencyApp.models import Agency
@@ -110,19 +111,27 @@ def CitizenReviewsHistoryApi(request):
 @csrf_exempt
 def BranchSupervisorSignupApi(request):
     branchSupervisor_data = JSONParser().parse(request)
-    branchSupervisor_serializer = BranchSupervisorSignupSerializer(data = branchSupervisor_data)
-    if branchSupervisor_serializer.is_valid():
-        branchSupervisor_serializer.save()
-        return JsonResponse("Added Successfully!!" , safe=False)
-    return JsonResponse("Failed to Add.",safe=False)
+    branchName = branchSupervisor_data["branch"]
+    branchObj = Branch.objects.get(name = branchName)
+    if BranchSupervisor.objects.filter(govId=branchSupervisor_data["govId"]):
+        return JsonResponse("Failed to Add.",safe=False)
+    if BranchSupervisor.objects.filter(branch=branchObj):
+        return JsonResponse("branch is already taken.",safe=False)
+    branchSupervisor = BranchSupervisor(name=branchSupervisor_data["name"], password=branchSupervisor_data["password"], govId=branchSupervisor_data["govId"], branch=branchObj, supervisionType=branchSupervisor_data["supervisionType"])
+    branchSupervisor.save()
+    return JsonResponse("Added Successfully!!" , safe=False)
 
 @csrf_exempt
 def BranchSupervisorLoginApi(request):
     if request.method == 'POST':
         branchSupervisor_data = JSONParser().parse(request)
         if BranchSupervisor.objects.filter(govId = branchSupervisor_data['govId'] , password=branchSupervisor_data['password']):
-            return JsonResponse("LoggedIn Successfully!!" , safe=False)
-        return JsonResponse("Invalid Id or password.",safe=False)
+            branchSupervisor = BranchSupervisor.objects.get(govId = branchSupervisor_data['govId'] , password=branchSupervisor_data['password'])
+            if branchSupervisor.isApproved == True:
+                return JsonResponse("LoggedIn Successfully!!" , safe=False)
+            else:
+                return JsonResponse("Not Approved Yet!!" , safe=False)
+        return JsonResponse("Invalid Id or password.", safe=False)
     
 @csrf_exempt
 def GetBranchSupervisorByIdApi(request):
@@ -144,19 +153,27 @@ def GetBranchSupervisorByIdApi(request):
 @csrf_exempt
 def AgencySupervisorSignupApi(request):
     agencySupervisor_data = JSONParser().parse(request)
-    agencySupervisor_serializer = AgencySupervisorSignupSerializer(data = agencySupervisor_data)
-    if agencySupervisor_serializer.is_valid():
-        agencySupervisor_serializer.save()
-        return JsonResponse("Added Successfully!!" , safe=False)
-    return JsonResponse("Failed to Add.",safe=False)
+    agencyName = agencySupervisor_data["agency"]
+    agencyObj = Agency.objects.get(name = agencyName)
+    if AgencySupervisor.objects.filter(govId=agencySupervisor_data["govId"]):
+        return JsonResponse("Failed to Add.",safe=False)
+    if AgencySupervisor.objects.filter(agency=agencyObj):
+        return JsonResponse("agency is already taken.",safe=False)
+    agencySupervisor = AgencySupervisor(name=agencySupervisor_data["name"], password=agencySupervisor_data["password"], govId=agencySupervisor_data["govId"], agency=agencyObj, supervisionType=agencySupervisor_data["supervisionType"])
+    agencySupervisor.save()
+    return JsonResponse("Added Successfully!!" , safe=False)
 
 @csrf_exempt
 def AgencySupervisorLoginApi(request):
     if request.method == 'POST':
         agencySupervisor_data = JSONParser().parse(request)
         if AgencySupervisor.objects.filter(govId = agencySupervisor_data['govId'] , password=agencySupervisor_data['password']):
-            return JsonResponse("LoggedIn Successfully!!" , safe=False)
-        return JsonResponse("Invalid email or password.",safe=False)
+            agencySupervisor = AgencySupervisor.objects.get(govId = agencySupervisor_data['govId'] , password=agencySupervisor_data['password'])
+            if agencySupervisor.isApproved == True:
+                return JsonResponse("LoggedIn Successfully!!" , safe=False)
+            else:
+                return JsonResponse("Not Approved Yet!!" , safe=False)
+        return JsonResponse("Invalid govId or password.",safe=False)
 
 @csrf_exempt
 def GetAgencySupervisorByIdApi(request):

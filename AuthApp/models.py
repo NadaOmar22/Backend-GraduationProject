@@ -22,10 +22,8 @@ class GovSupervisor(User):
 
 class BranchSupervisor(GovSupervisor):
     branch =  models.OneToOneField(Branch, on_delete=models.CASCADE, null=True)
-    branchName = models.CharField(max_length=100, unique=True)
-
+    
 class AgencySupervisor(GovSupervisor):
     agency = models.OneToOneField(Agency, on_delete=models.CASCADE, null=True)
-    agencyName = models.CharField(max_length=100, unique=True)
-
+    
  

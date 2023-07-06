@@ -75,15 +75,15 @@ def AddBranchApi(request):
     if request.method == 'POST':
         request_data = JSONParser().parse(request)
     
-        name = request_data['branchName']
-        if Branch.objects.filter(name=request_data['branchName']).exists():
+        branchName = request_data['branchName'] + ' ' + request_data['agencyName']
+        if Branch.objects.filter(name=branchName).exists():
             return JsonResponse("Branch already exists!", safe=False) 
 
         location = request_data['location']
         agencyObj = Agency.objects.get(name = request_data['agencyName'])
         
-        if name and location:
-            newBranch = Branch(name=request_data['branchName'], location=location)
+        if branchName and location:
+            newBranch = Branch(name=branchName, location=location)
             newBranch.save()
             agencyObj.branches.add(newBranch)
     
