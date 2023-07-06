@@ -50,7 +50,6 @@ def CitizenEditProfileApi(request):
     else:
        return JsonResponse("Error: Wrong Method Type",safe=False)
 
-
 @csrf_exempt
 def GetCitizenByEmailApi(request):
     if request.method=='POST':
@@ -117,7 +116,7 @@ def BranchSupervisorSignupApi(request):
         return JsonResponse("Failed to Add.",safe=False)
     if BranchSupervisor.objects.filter(branch=branchObj):
         return JsonResponse("branch is already taken.",safe=False)
-    branchSupervisor = BranchSupervisor(name=branchSupervisor_data["name"], password=branchSupervisor_data["password"], govId=branchSupervisor_data["govId"], branch=branchObj, supervisionType=branchSupervisor_data["supervisionType"])
+    branchSupervisor = BranchSupervisor(name=branchSupervisor_data["name"], password=branchSupervisor_data["password"], govId=branchSupervisor_data["govId"], branch=branchObj, supervisionType=branchSupervisor_data["supervisionType"], branchName=branchName)
     branchSupervisor.save()
     return JsonResponse("Added Successfully!!" , safe=False)
 
@@ -143,13 +142,13 @@ def GetBranchSupervisorByIdApi(request):
             "govId": requiredBranchSupervisior.govId,
             "password": requiredBranchSupervisior.password,
             "branchName" : requiredBranchSupervisior.branchName,
+            "branchLocation": requiredBranchSupervisior.branch.location,
             "supervisionType": requiredBranchSupervisior.supervisionType
         } 
         return JsonResponse(response,safe=False)
     else:
        return JsonResponse("Error: Wrong Method Type",safe=False)
     
-
 @csrf_exempt
 def AgencySupervisorSignupApi(request):
     agencySupervisor_data = JSONParser().parse(request)
@@ -159,7 +158,7 @@ def AgencySupervisorSignupApi(request):
         return JsonResponse("Failed to Add.",safe=False)
     if AgencySupervisor.objects.filter(agency=agencyObj):
         return JsonResponse("agency is already taken.",safe=False)
-    agencySupervisor = AgencySupervisor(name=agencySupervisor_data["name"], password=agencySupervisor_data["password"], govId=agencySupervisor_data["govId"], agency=agencyObj, supervisionType=agencySupervisor_data["supervisionType"])
+    agencySupervisor = AgencySupervisor(name=agencySupervisor_data["name"], password=agencySupervisor_data["password"], govId=agencySupervisor_data["govId"], agency=agencyObj, supervisionType=agencySupervisor_data["supervisionType"], agencyName=agencyName)
     agencySupervisor.save()
     return JsonResponse("Added Successfully!!" , safe=False)
 
@@ -275,4 +274,29 @@ def GetAllAgencyServicesForAgencySupervisor(request):
         
         return JsonResponse(agencyServices, safe=False)
     return JsonResponse("wrong method type", safe=False)
+
+@csrf_exempt
+def BranchSupervisorEditProfileApi(request):
+    if request.method=='POST':
+        branch_data=JSONParser().parse(request)
+        CurrentBranchSupervisor = BranchSupervisor.objects.get(govId=branch_data['govId'])
+        CurrentBranchSupervisor.name = branch_data['name']
+        CurrentBranchSupervisor.password = branch_data['password']
+        CurrentBranchSupervisor.branch.location = branch_data['branchLocation']
+        CurrentBranchSupervisor.branch.save()
+        CurrentBranchSupervisor.save()
+        return JsonResponse("Data updated Successfully!!" , safe=False)
+    else:
+       return JsonResponse("Error: Wrong Method Type",safe=False)
     
+@csrf_exempt
+def AgencySupervisorEditProfile(request):
+    if request.method=='POST':
+        branch_data=JSONParser().parse(request)
+        CurrentAgencySupervisor = AgencySupervisor.objects.get(govId=branch_data['govId'])
+        CurrentAgencySupervisor.name = branch_data['name']
+        CurrentAgencySupervisor.password = branch_data['password']
+        CurrentAgencySupervisor.save()
+        return JsonResponse("Data updated Successfully!!" , safe=False)
+    else:
+       return JsonResponse("Error: Wrong Method Type",safe=False)

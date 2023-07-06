@@ -9,7 +9,7 @@ class User(models.Model):
     
 
 class Citizen(User):
-   nationalId = models.CharField(max_length=14, null=True)
+   nationalId = models.CharField(max_length=14, null=True, unique=True)
    email = models.EmailField(max_length=50, default='test@example.com', unique=True)
    phoneNumber = models.CharField(max_length=11)
 
@@ -22,8 +22,11 @@ class GovSupervisor(User):
 
 class BranchSupervisor(GovSupervisor):
     branch =  models.OneToOneField(Branch, on_delete=models.CASCADE, null=True)
+    branchName = models.CharField(max_length=100, null=True)
     
 class AgencySupervisor(GovSupervisor):
     agency = models.OneToOneField(Agency, on_delete=models.CASCADE, null=True)
+    agencyName = models.CharField(max_length=100, null=True)
+
     
  

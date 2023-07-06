@@ -13,6 +13,8 @@ urlpatterns=[
     url('agencySignup/',views.AgencySupervisorSignupApi),
     url('agencyLogin/',views.AgencySupervisorLoginApi), 
     url('editProfile/', views.CitizenEditProfileApi),
+    url('branchSupervisorEditProfile/', views.BranchSupervisorEditProfileApi),
+    url('agencySupervisorEditProfile/', views.AgencySupervisorEditProfile),
     url('addreview/', views.CitizenAddReviewApi), 
     url('getCitizenByEmail/',views.GetCitizenByEmailApi),
     url('getBranchSupervisorById/', views.GetBranchSupervisorByIdApi),
