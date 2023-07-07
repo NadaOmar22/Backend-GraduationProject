@@ -39,8 +39,9 @@ def GetAgenciesForAdminApi(request):
         response = []
         for agency in agencies:
             agencyData = AgencySerializer(agency)
-            agencyData2 = agencyData.data
-            branchNames = set()
+            #agencyData2 = agencyData.data
+            response.append(agencyData.data)
+            """branchNames = set()
             serviceNames = set()
             for branch in agencyData2['branches']:
                 branchName = branch['name']
@@ -52,7 +53,7 @@ def GetAgenciesForAdminApi(request):
                 "branches": list(branchNames),
                 "services": list(serviceNames)
             }
-            response.append(newAgencyData)
+            response.append(newAgencyData)"""
     return JsonResponse(response, safe=False)
 
 @csrf_exempt 

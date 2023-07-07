@@ -10,6 +10,7 @@ class BranchSerializer(serializers.ModelSerializer):
 
 class AgencySerializer(serializers.ModelSerializer):
     branches = BranchSerializer(many=True)
+    allServices = ServiceSerializer(many=True)
     class Meta:
         model = Agency
-        fields = ('name', 'branches')
+        fields = ('name', 'branches', 'allServices')
