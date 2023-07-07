@@ -112,7 +112,6 @@ def AddDocumentAPI(request):
 def AddServiceForAgencyAPI(request):
     if request.method == 'POST':
         serviceData = JSONParser().parse(request)
-        
         agency = Agency(name=serviceData['agencyName'])
         agency_exists = Agency.objects.filter(name=agency.name).exists()
         if agency_exists:
@@ -137,7 +136,7 @@ def AddServiceForAgencyAPI(request):
                 document = Document.objects.get(name=document.name)
             else:
                 document.save()
-                serviceDocuments.append(document)
+            serviceDocuments.append(document)
         service.documents.set(serviceDocuments)
         service.save()
         agency.allServices.add(service)
