@@ -11,91 +11,82 @@ Original file is located at
 #pip3 install django
 #pip3 install djangorestframework
 #python -m pip install Pillow
-#pip3 install emoji --upgrade //
-#pip3 install PyArabic //
-#pip3 install nltk //
-#pip3 install -U scikit-learn //
+#pip3 install emoji --upgrade 
+#pip3 install PyArabic
+#pip3 install nltk
+#pip3 install -U scikit-learn
 #pip3 install pandas
 #pip3 install django-cors-headers
 
 
 import re
-import sys
-#import nltk
-#import emoji
-import string
-import argparse
+import nltk
+import emoji
 import numpy as np
 import pandas as pd
-#import missingno as msno
 import pyarabic.araby as araby
 from nltk.corpus import stopwords
-#from nltk.tokenize import word_tokenize
 from sklearn.pipeline import make_pipeline
-from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
-#from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics import confusion_matrix,accuracy_score, classification_report, f1_score
+from sklearn.metrics import f1_score
+from sklearn.svm import SVC
 
-#nltk.download('stopwords')
-#nltk.download('punkt')
-import os
+nltk.download('stopwords')
+nltk.download('punkt')
+
+#reading the dataset
 df = pd.read_csv('ModelApp/MachineModel/Sentiment_Dataset.csv')
 df.head()
-"""
+
+#Preprocessing Functions
 def remove_emoji(text):
     return emoji.demojize(text)
 
 def cleaning(text):
  Arabic_numbers = ['٤','١','٢','٣','٥','٦','٧','٨','٩','٠']
  special_character = ['؟','،','?',',','!','.',':','"','""','‘‘','‘','؛','↓',"'", '‰',
-                      '`','€',';','ç','ı','À','@','٬','~᷂','٫','.','ـ',''
+                      '`','€',';','ç','ı','À','@','٬','~᷂','٫','◕','.','ـ',''
                       '=','#','$','%','^','&','*','()',')','(','\\','/','~','¦'
-                      '((', '_', '"','"', '…','-','×','ツ','+','÷','٪', '{', '}', '[',']', '<', '>','|']
- #remove emojis 
+                      '((', '_', '"','"', '…','-','×','ツ','+','÷','٪','ლ', '{', '}', '[',']', '<', '>','|']
+ #remove emojis
  text= remove_emoji(text)
- #replace special characters with whitespaces 
+ #replace special characters with whitespaces
  for word in range(0, len(special_character)):
-     text = text.replace(special_character[word], ' ') 
- #replace arabic numbers with whitespaces 
+     text = text.replace(special_character[word], ' ')
+ #replace arabic numbers with whitespaces
  for word in range(0, len(Arabic_numbers)):
-     text = text.replace(Arabic_numbers[word], ' ') 
+     text = text.replace(Arabic_numbers[word], ' ')
  #remove english words letters and numbers
  text = re.sub(r'[0-9a-zA-Z]+',' ', text)
-
  return text
 
 def stop_word_removal(text):
- stop_words = set(stopwords.words("arabic"))
- words = araby.tokenize(text)
- text = " ".join([w for w in words if not w in stop_words])
- return text
+  stop_words = set(stopwords.words("arabic"))
+  words = araby.tokenize(text)
+  text = " ".join([w for w in words if not w in stop_words])
+  return text
 
 def normalization(text):
-#replace Ta'a and Hamza'a and Ya'a
- text = re.sub("[إأٱآا]", "ا", text)
- text = re.sub("ى", "ي", text)
- text = re.sub("ة", "ه", text)
-#remove extra whitespace
- text = re.sub('\s+', ' ', text)   
-#remove tashkeel
- text = araby.strip_tashkeel(text)
- return text
+  text = re.sub("[إأٱآا]", "ا", text)
+  text = re.sub("ى", "ي", text)
+  text = re.sub("ة", "ه", text)
+  #remove extra whitespace
+  text = re.sub('\s+', ' ', text)
+  #remove tashkeel
+  text = araby.strip_tashkeel(text)
+  return text
 
 def pre_processing(text):
  #Cleaning
  text = cleaning(text)
  #stop words removal
  text = stop_word_removal(text)
- #Normalization 
+ #Normalization
  text = normalization(text)
  #stop words removal
  text = stop_word_removal(text)
  return text
-
-#pre_processing the review column
-df['Review']  = df['Review'].apply(lambda x:pre_processing(x))
 
 def process_text(text):
     stemmer = nltk.ISRIStemmer()
@@ -104,11 +95,12 @@ def process_text(text):
     word_list = [stemmer.suf32(w) for w in  word_list]
     return ' '.join(word_list)
 
-#lemmatization the review column
+#pre_processing the review column
+df['Review']  = df['Review'].apply(lambda x:pre_processing(x))
+
+#Stemming the review column
 df['Review']  = df['Review'].apply(lambda x:process_text(x))
-df['Review']
-"""
-df["Classification"].value_counts()
+
 
 #remove tabs and new lines from the text 
 df['Review'] = df.Review.str.replace("\xa0"," ") 
@@ -124,22 +116,31 @@ df.dropna(subset=['Review'], inplace=True)
 
 # drop duplicates 
 df=df.drop_duplicates(subset=['Review'])
-# shuffling the data
-df = df.sample(frac = 1)
-# splitting into train and tests
-X_train, X_test, Y_train, Y_test = train_test_split(df['Review'], df['Classification'], test_size =0.2, random_state=100)
 
-# assemble several steps that can be cross-validated together while setting different parameters.
-pipe = make_pipeline(TfidfVectorizer(), MultinomialNB())
-#pipe = make_pipeline(CountVectorizer(), MultinomialNB())
 
-pipe.fit(X_train,Y_train)
-prediction = pipe.predict(X_test)
-#print("f1 Score -> ",f1_score(Y_test,prediction,average='micro')*100)
+
+# Split the data into training and test sets
+x_train, x_test, y_train, y_test = train_test_split(df['Review'], df['Classification'], test_size=0.2, random_state=42)
+
+
+# The Chosen Model (SVM Model)
+
+# Create a pipeline with TF-IDF vectorizer and MultiClass SVM classifier
+pipe = make_pipeline(TfidfVectorizer(), SVC(kernel='linear', C=1, decision_function_shape='ovr')) #Use linear kernel function, The C parameter controls the trade-off between maximizing the margin and minimizing the classification error.
+                                                                                                  #The decision_function_shape parameter is set to 'ovr' (one-vs-rest) to allow the SVM to handle multi-class classification.
+
+# Train the model on the training set
+pipe.fit(x_train, y_train)
+
+# Make predictions on the test set
+prediction = pipe.predict(x_test)
+
+# Evaluate the model using F1 score
+print("F1 Score -> ", f1_score(y_test, prediction, average='micro')*100)
 
 def prediction(text):
-  #text = pre_processing(text)
-  #text = process_text(text)
+  text = pre_processing(text)
+  text = process_text(text)
   list = [text]
   prediction = pipe.predict(list)
   return prediction
