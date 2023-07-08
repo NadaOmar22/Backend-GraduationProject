@@ -117,19 +117,22 @@ def CreateAgencyApi(request):
 @csrf_exempt
 def AddAppApi(request):
     if request.method=='POST':
-        app_data = JSONParser().parse(request)
+        app_data = request.POST
+        cover_file = request.FILES.get('cover', None)
+
+        if not cover_file:
+            return JsonResponse("No cover file provided", safe=False)
+        
         if App.objects.filter(name=app_data["name"]).exists():
             return JsonResponse("App already exists!!" , safe=False)
-        print(app_data["cover"])
 
         newAPP = App(
                 name = app_data["name"],
                 rate = app_data["rate"],
-                englishName = app_data["englishName"],
+                englishName = app_data["engName"],
                 link = app_data["link"],
                 description = app_data["description"],
-                cover = app_data["cover"]
-               
+                cover = cover_file
         )
         newAPP.save()
         return JsonResponse("Added Successfully!!" , safe=False)

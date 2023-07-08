@@ -32,11 +32,11 @@ def GetFacilityReviewsApi(request):
 @csrf_exempt   
 def ServeImage(request, filename):
     file_path = os.path.join(settings.MEDIA_ROOT, filename)
-    #print("i will show you youmna!", file_path)
     if os.path.exists(file_path):
         image = open(file_path, 'rb')  #rb : binary format
         response = FileResponse(image)
         return response
+        
     raise Http404
 
 
@@ -295,17 +295,12 @@ def ReviewsYearsFilteredByBranchApi(request):
 def ScrapDocumentApi(request):
     serviceNames = []
     serviceDocuments = []
-
     page = requests.get("https://psm.gov.eg/providers/1/services")
-
     src = page.content
     soup = BeautifulSoup(src, "html.parser")
-
     services = soup.find_all("div", {"class" : "media-body text-right pr-4"})
-
     for i in range(len(services)):
         serviceNames.append(services[i].contents[1].text.strip())
-
         try:
             serviceObj = Service.objects.get(name=serviceNames[i])
         except Service.DoesNotExist:
@@ -328,12 +323,10 @@ def ScrapDocumentApi(request):
                 documentObj.save()
             serviceObj.documents.add(documentObj)
         serviceObj.save()
-
     response = {
         'serviceName' : serviceNames,
         'serviceDocuments' : serviceDocuments,
     }
-
     return JsonResponse(response,safe=False)
 
 
