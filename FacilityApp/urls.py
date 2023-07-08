@@ -23,7 +23,10 @@ urlpatterns=[
    url('scrapDocuments/', views.ScrapDocumentApi),
    url('getAllServices/', views.GetAllServicesApi),
    url('getAllDocuments/', views.GetAllDocumentsApi),
-   url('updateService/', views.UpdateServiceApi)
+   url('updateService/', views.UpdateServiceApi),
+   
+   url('getBranchesForService/', views.GetBranchesForServiceApi),
+
 
 ] 
 

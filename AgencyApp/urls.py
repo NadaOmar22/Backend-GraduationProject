@@ -10,5 +10,5 @@ urlpatterns=[
    url('getAgenciesForAdmin/', views.GetAgenciesForAdminApi),
    url('updateBranchServices/', views.UpdateBranchServicesApi),
    url('addBranch/', views.AddBranchApi),
-   url('deleteBranch/', views.DeleteBranchApi)
+   url('deleteBranch/', views.DeleteBranchApi),
 ] 

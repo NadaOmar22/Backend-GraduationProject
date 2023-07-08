@@ -32,6 +32,9 @@ def GetAgenciesApi(request):
     else:
         return JsonResponse("Error: Wrong Method Type", status=400)
 
+     
+
+
 @csrf_exempt 
 def GetAgenciesForAdminApi(request):
     if request.method == 'POST':
@@ -39,21 +42,8 @@ def GetAgenciesForAdminApi(request):
         response = []
         for agency in agencies:
             agencyData = AgencySerializer(agency)
-            #agencyData2 = agencyData.data
             response.append(agencyData.data)
-            """branchNames = set()
-            serviceNames = set()
-            for branch in agencyData2['branches']:
-                branchName = branch['name']
-                branchNames.add(branchName)
-                for service in branch['services']:
-                    serviceNames.add(service['name'])
-            newAgencyData = {
-                "agencyName": agencyData2['name'],
-                "branches": list(branchNames),
-                "services": list(serviceNames)
-            }
-            response.append(newAgencyData)"""
+        
     return JsonResponse(response, safe=False)
 
 @csrf_exempt 

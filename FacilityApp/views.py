@@ -118,13 +118,11 @@ def AddServiceForAgencyAPI(request):
             agency = Agency.objects.get(name=agency.name)
         else:
             return JsonResponse("Error: Agency Name Does't Exsit" , safe=False)
-            #agency.save()
 
         service = Service(name=serviceData['serviceName'])
         service_exists = Service.objects.filter(name=service.name).exists()
         if service_exists:
             return JsonResponse("Error: Service Name Already Exit" , safe=False)
-            #service = Service.objects.get(name=service.name)
         else:
             service.save()
 
@@ -154,12 +152,9 @@ def ServiceReviewsFilteredByYearApi(request):
         facilityObj = Facility.objects.get(name = request_data['serviceName'])
 
         reviews = []
-        print("befooooooore")
         if (request_data['branchName'] == 'كل الفروع'):
-            print("in IFFFFFFFF")
             reviews = Review.objects.filter(destination = facilityObj, date__year = year)
         else:
-            print("IN ELSEEEEEE")
             branchObj = Branch.objects.get(name = request_data['branchName'])
             reviews = Review.objects.filter(destination = facilityObj, relatedBranch = branchObj, date__year = year)
 
@@ -339,6 +334,26 @@ def GetAllServicesApi(request):
         response.append(data.data)
     return JsonResponse(response, safe = False)
 
+@csrf_exempt 
+def GetBranchesForServiceApi(request):
+    if request.method == 'POST':
+        request_data = JSONParser().parse(request)
+        branches = Branch.objects.all()
+        branches_list = []
+        for branch in branches:
+            for service in branch.services.all():
+                if service.name == request_data["serviceName"]:
+                    temp = {
+                        'name': branch.name,
+                        'location': branch.location
+                    }
+                    branches_list.append(temp)
+                    break
+                
+        return JsonResponse (branches_list, safe=False)   
+    else:
+        return JsonResponse("Error: Wrong Method Type", status=400) 
+
 @csrf_exempt
 def GetAllDocumentsApi(request):
     documents = Document.objects.all()
@@ -370,3 +385,4 @@ def UpdateServiceApi(request):
     return JsonResponse("Wrong Method Type!!", safe = False)
     
        
+  
