@@ -30,7 +30,8 @@ def UpdateReviewStateAPI(request):
 @csrf_exempt       
 def addReviews(request):
     if request.method == 'POST':
-       request_data = JSONParser().parse(request) 
+       request_data = JSONParser().parse(request)
+       
 
           
 

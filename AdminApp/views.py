@@ -7,6 +7,8 @@ from django.http.response import JsonResponse
 from AuthApp.models import AgencySupervisor, BranchSupervisor
 from FacilityApp.models import Document, Service, App
 from AgencyApp.models import Agency, Branch
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 
 @csrf_exempt
@@ -118,7 +120,8 @@ def AddAppApi(request):
         app_data = JSONParser().parse(request)
         if App.objects.filter(name=app_data["name"]).exists():
             return JsonResponse("App already exists!!" , safe=False)
-        
+        print(app_data["cover"])
+
         newAPP = App(
                 name = app_data["name"],
                 rate = app_data["rate"],
@@ -126,6 +129,7 @@ def AddAppApi(request):
                 link = app_data["link"],
                 description = app_data["description"],
                 cover = app_data["cover"]
+               
         )
         newAPP.save()
         return JsonResponse("Added Successfully!!" , safe=False)
