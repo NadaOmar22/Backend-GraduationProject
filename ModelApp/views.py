@@ -25,13 +25,7 @@ def UpdateReviewStateAPI(request):
         reviewObj.state = request_data['state']
         reviewObj.save()
         return JsonResponse("State changed", safe=False)
-    return JsonResponse("Invalid Request Type", safe=False)
-
-@csrf_exempt       
-def addReviews(request):
-    if request.method == 'POST':
-       request_data = JSONParser().parse(request)
-       
+    return JsonResponse("Invalid Request Type", safe=False)    
 
           
 
