@@ -6,6 +6,10 @@ class User(models.Model):
     userId = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)   
     password = models.CharField(max_length=128)
+    def save(self, *args, **kwargs):
+        if not self.pk: # check if the object is being created for the first time
+            self.password = make_password(self.password) # encrypt the password
+        super(User, self).save(*args, **kwargs)
     
 
 class Citizen(User):

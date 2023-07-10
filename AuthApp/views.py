@@ -6,6 +6,8 @@ from AgencyApp.serializers import BranchSerializer
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 from rest_framework.renderers import JSONRenderer
+from django.contrib.auth.hashers import make_password
+
 
 from ModelApp.models import Review
 from AgencyApp.models import Agency
@@ -28,13 +30,19 @@ def CitizenSignupApi(request):
 
 @csrf_exempt
 def CitizenLoginApi(request):
-    if request.method=='POST':
-        citizen_data=JSONParser().parse(request)
-        if Citizen.objects.filter(email=citizen_data['email'] , password=citizen_data['password']):
-            return JsonResponse("LoggedIn Successfully!!" , safe=False)
-        return JsonResponse("Invalid email or password.",safe=False)
+    if request.method == 'POST':
+        citizen_data = JSONParser().parse(request)
+        if Citizen.objects.filter(email=citizen_data['email']):
+            citizen = Citizen.objects.get(email=citizen_data['email'])
+            password = citizen_data['password']
+            print("encrupt")
+            print(make_password(citizen_data['password']))
+            if check_password(password, citizen.password):
+                return JsonResponse("LoggedIn Successfully!!" , safe=False)
+        return JsonResponse("Invalid email or password.", safe=False)
     else:
-       return JsonResponse("Error: Wrong Method Type",safe=False)
+        return JsonResponse("Error: Wrong Method Type", safe=False)
+
 
 @csrf_exempt
 def CitizenEditProfileApi(request):
@@ -43,7 +51,7 @@ def CitizenEditProfileApi(request):
         CurrentCitizen = Citizen.objects.get(email=citizen_data['email'])
         CurrentCitizen.name = citizen_data['name']
         CurrentCitizen.email = citizen_data['email']
-        CurrentCitizen.password = citizen_data['password']
+        CurrentCitizen.password = make_password(citizen_data['password'])
         CurrentCitizen.phoneNumber = citizen_data['phoneNumber']
         CurrentCitizen.save()
         return JsonResponse("Data updated Successfully!!" , safe=False)
@@ -120,17 +128,22 @@ def BranchSupervisorSignupApi(request):
     branchSupervisor.save()
     return JsonResponse("Added Successfully!!" , safe=False)
 
+from django.contrib.auth.hashers import check_password
+
 @csrf_exempt
 def BranchSupervisorLoginApi(request):
     if request.method == 'POST':
         branchSupervisor_data = JSONParser().parse(request)
-        if BranchSupervisor.objects.filter(govId = branchSupervisor_data['govId'] , password=branchSupervisor_data['password']):
-            branchSupervisor = BranchSupervisor.objects.get(govId = branchSupervisor_data['govId'] , password=branchSupervisor_data['password'])
-            if branchSupervisor.isApproved == True:
-                return JsonResponse("LoggedIn Successfully!!" , safe=False)
-            else:
-                return JsonResponse("Not Approved Yet!!" , safe=False)
-        return JsonResponse("Invalid Id or password.", safe=False)
+        if BranchSupervisor.objects.filter(govId = branchSupervisor_data['govId']):
+            branchSupervisor = BranchSupervisor.objects.get(govId = branchSupervisor_data['govId'])
+            password = branchSupervisor_data['password']
+            if check_password(password, branchSupervisor.password):
+                if branchSupervisor.isApproved == True:
+                    return JsonResponse("LoggedIn Successfully!!" , safe=False)
+                else:
+                    return JsonResponse("Not Approved Yet!!" , safe=False)
+            else:   
+                return JsonResponse("Invalid Id or password.", safe=False)
     
 @csrf_exempt
 def GetBranchSupervisorByIdApi(request):
@@ -166,14 +179,18 @@ def AgencySupervisorSignupApi(request):
 def AgencySupervisorLoginApi(request):
     if request.method == 'POST':
         agencySupervisor_data = JSONParser().parse(request)
-        if AgencySupervisor.objects.filter(govId = agencySupervisor_data['govId'] , password=agencySupervisor_data['password']):
-            agencySupervisor = AgencySupervisor.objects.get(govId = agencySupervisor_data['govId'] , password=agencySupervisor_data['password'])
-            if agencySupervisor.isApproved == True:
-                return JsonResponse("LoggedIn Successfully!!" , safe=False)
-            else:
-                return JsonResponse("Not Approved Yet!!" , safe=False)
-        return JsonResponse("Invalid govId or password.",safe=False)
-
+        if AgencySupervisor.objects.filter(govId = agencySupervisor_data['govId']):
+            agencySupervisor = AgencySupervisor.objects.get(govId = agencySupervisor_data['govId'])
+            password = agencySupervisor_data['password']
+            if check_password(password, agencySupervisor.password):
+                if agencySupervisor.isApproved == True:
+                    return JsonResponse("LoggedIn Successfully!!" , safe=False)
+                else:
+                    return JsonResponse("Not Approved Yet!!" , safe=False)
+            else:   
+                return JsonResponse("Invalid Id or password.", safe=False)
+        return JsonResponse("Invalid Id or password.", safe=False)
+    
 @csrf_exempt
 def GetAgencySupervisorByIdApi(request):
     if request.method=='POST':
@@ -281,7 +298,7 @@ def BranchSupervisorEditProfileApi(request):
         branch_data=JSONParser().parse(request)
         CurrentBranchSupervisor = BranchSupervisor.objects.get(govId=branch_data['govId'])
         CurrentBranchSupervisor.name = branch_data['name']
-        CurrentBranchSupervisor.password = branch_data['password']
+        CurrentBranchSupervisor.password = make_password(branch_data['password']) 
         CurrentBranchSupervisor.branch.location = branch_data['branchLocation']
         CurrentBranchSupervisor.branch.save()
         CurrentBranchSupervisor.save()
@@ -295,7 +312,7 @@ def AgencySupervisorEditProfile(request):
         branch_data=JSONParser().parse(request)
         CurrentAgencySupervisor = AgencySupervisor.objects.get(govId=branch_data['govId'])
         CurrentAgencySupervisor.name = branch_data['name']
-        CurrentAgencySupervisor.password = branch_data['password']
+        CurrentAgencySupervisor.password = make_password(branch_data['password']) 
         CurrentAgencySupervisor.save()
         return JsonResponse("Data updated Successfully!!" , safe=False)
     else:
