@@ -6,8 +6,8 @@ Welcome to Sahelna, a comprehensive platform designed to facilitate communicatio
 ### Frontend Repository [Click Here](https://github.com/Asmaa-Refat/FrontEnd-GraduationProject)
 ### Backend Repository
 The backend of our project is built using Django and contains the Sentiment Analysis model. This repository contains all the code for the server-side logic, including database models, views, and URLs.
-<br>
-**Sentiment Analysis Model** |  We tried so many Machine Learning algorithms like 
+<br> <br>
+### **Sentiment Analysis Model** |  We tried so many Machine Learning algorithms like 
 - **SVM accuracy 85.5%**
 - multinomialNB accuracy 80.91%
 - Random Forest accuracy 81.83 %
